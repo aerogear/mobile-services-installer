@@ -1,0 +1,12 @@
+---
+
+broker_mobile_configuration:
+- section: openshift
+  name: image_pull_policy
+  value: Always
+- section: openshift
+  name: sandbox_role
+  value: admin
+- section: broker
+  name: launch_apb_on_bind
+  value: true
