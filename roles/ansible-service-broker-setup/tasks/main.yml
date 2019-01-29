@@ -48,10 +48,29 @@
 - set_fact:
     new_configmap: "{{ original_configmap|combine({ 'registry': new_registry_config }, recursive=True) }}"
 
-- name: Patch existing configmap
+- name: Patch existing configmap and redeploy Ansible Service Broker
   block:
     - set_fact:
         new_configmap_raw: "{{ new_configmap | to_nice_yaml | replace('\n', '\\n') }}"
+
+    - name: Get Ansible Service Broker DeploymentConfig name
+      shell: oc get dc -o jsonpath='{.items[*].metadata.name}' -n {{ broker_project_name }}
+      register: asb_dc_name
+
+    - set_fact:
+        asb_dc_name: "{{ asb_dc_name.stdout }}"
+
+    - name: Check if deployment of Ansible Service Broker is not in progress
+      shell: "oc rollout history dc/{{ asb_dc_name }} -n {{ broker_project_name }} | grep Running"
+      retries: 20
+      delay: 10
+      register: result
+      until: not result.stdout
+      failed_when: result.stdout
+
     - name: Patch Broker Configmap
       command: oc patch configmap broker-config -p "{\"data\":{\"broker-config\":\"{{ new_configmap_raw }}\" }}" -n {{ broker_project_name }}
+
+    - name: Redeploy Ansible Service Broker
+      shell: "oc rollout latest {{ asb_dc_name }} -n {{ broker_project_name }}"
   when: original_configmap != new_configmap
