@@ -7,7 +7,7 @@
 - block:
   - name: Copy CRD definition to tmp file
     copy:
-      src: ../files/mobile-client-crd.yaml
+      src: ../files/crd.yaml
       dest: /tmp/mobile-client-crd.yaml  
 
   - name: Create mobileClient CRD
