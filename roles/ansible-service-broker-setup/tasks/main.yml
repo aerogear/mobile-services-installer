@@ -1,38 +1,57 @@
 ---
 
-- name: Get Ansible Broker project name
-  shell: oc get projects | grep -e ansible-service-broker -e automation-service-broker | awk '{print $1}'
-  register: broker_project_name
+- name: Verify Ansible Service Broker project name exists
+  block:
+    - name: Get Ansible Service Broker project name
+      shell: oc get projects | grep -e ansible-service-broker -e automation-service-broker | awk '{print $1}'
+      register: broker_project_name
+      failed_when: broker_project_name.stdout == ""
+    - set_fact:
+        broker_project_name: '{{ broker_project_name.stdout }}'
+  rescue:
+    - name: Fail when Ansible Service Broker project was not found
+      pause:
+        prompt: |
+          Ansible Service Broker project not found.
+          Please verify that currently logged in user has privileges to list and edit Ansible Service Broker Project.
 
-- set_fact:
-    broker_project_name: '{{ broker_project_name.stdout }}'
+          Hit Ctrl + c and then 'a' to abort the installation
 
 - name: Get Ansible Service Broker Configmap
-  shell: oc get configmap broker-config -o jsonpath='{.data.broker-config}' -n openshift-automation-service-broker {{ broker_project_name }}
-  register: original_configmap
+  shell: oc get configmap broker-config -o jsonpath='{.data.broker-config}' -n {{ broker_project_name }}
+  register: original_configmap_raw
 
 - set_fact:
-    original_configmap: '{{ original_configmap.stdout | from_yaml }}'
+    original_configmap: '{{ original_configmap_raw.stdout | from_yaml }}'
 
-- set_fact:
-    original_configmap: "{{ original_configmap|combine({'openshift': {'image_pull_policy': image_pull_policy }}, recursive=True) }}"
+- name: Apply configuration of Broker necessary for Mobile Services
+  set_fact:
+    original_configmap: "{{ original_configmap|combine({ item.section: { item.name: item.value }}, recursive=True) }}"
+  with_list: "{{ broker_mobile_configuration }}"
 
-- set_fact:
-    original_configmap: "{{ original_configmap|combine({'openshift': {'sandbox_role': sandbox_role }}, recursive=True) }}"
-
-- set_fact:
-    original_configmap: "{{ original_configmap|combine({'broker': {'launch_apb_on_bind': launch_apb_on_bind }}, recursive=True) }}"
-
-- name: Get additional broker config (from ../files)
+- name: Get additional config of broker registry (from ../files)
   set_fact:
     additional_registry_config: "{{ lookup('file', '../files/aerogearcatalog_registry.yaml') | from_yaml }}"
 
-- name: "Append registry config to original config"
-  set_fact:
-    new_registry_config: '{{ original_configmap.registry + additional_registry_config.registry }}'
+- set_fact:
+    additional_registry_config: "{{ additional_registry_config.registry }}"
 
 - set_fact:
-    new_configmap_raw: "{{ original_configmap|combine({ 'registry': new_registry_config }, recursive=True) | to_nice_yaml | replace('\n', '\\n') }}"
+    new_registry_config: "{{ original_configmap.registry }}"
 
-- name: Patch Broker Configmap
-  command: oc patch configmap broker-config -p "{\"data\":{\"broker-config\":\"{{ new_configmap_raw }}\" }}" -n {{ broker_project_name }}
+- name: Add broker registry configuration from file (if it's not already present in original configmap)
+  set_fact:
+    new_registry_config: '{{ new_registry_config + [item] }}'
+  with_list: "{{ additional_registry_config }}"
+  when: item not in new_registry_config
+
+- set_fact:
+    new_configmap: "{{ original_configmap|combine({ 'registry': new_registry_config }, recursive=True) }}"
+
+- name: Patch existing configmap
+  block:
+    - set_fact:
+        new_configmap_raw: "{{ new_configmap | to_nice_yaml | replace('\n', '\\n') }}"
+    - name: Patch Broker Configmap
+      command: oc patch configmap broker-config -p "{\"data\":{\"broker-config\":\"{{ new_configmap_raw }}\" }}" -n {{ broker_project_name }}
+  when: original_configmap != new_configmap
