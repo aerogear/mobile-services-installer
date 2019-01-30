@@ -5,3 +5,5 @@
   roles:
   - role: ansible-service-broker-setup
   - role: create-mobile-client-crd
+  vars_files:
+  - ./versions.yml 

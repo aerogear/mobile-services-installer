@@ -29,9 +29,14 @@
     original_configmap: "{{ original_configmap|combine({ item.section: { item.name: item.value }}, recursive=True) }}"
   with_list: "{{ broker_mobile_configuration }}"
 
-- name: Get additional config of broker registry (from ../files)
+- name: Generate broker registry config from template
+  template:
+    src: ../templates/aerogearcatalog_registry.yaml.j2
+    dest: /tmp/aerogearcatalog_registry.yaml
+
+- name: Get additional config of broker registry (from /tmp/aerogearcatalog_registry.yaml)
   set_fact:
-    additional_registry_config: "{{ lookup('file', '../files/aerogearcatalog_registry.yaml') | from_yaml }}"
+    additional_registry_config: "{{ lookup('file', '/tmp/aerogearcatalog_registry.yaml') | from_yaml }}"
 
 - set_fact:
     additional_registry_config: "{{ additional_registry_config.registry }}"
