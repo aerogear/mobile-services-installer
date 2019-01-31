@@ -24,6 +24,8 @@ ansible-playbook install-mobile-services.yml
 
 ## Local development
 
+By following next steps, you can spin up your local OpenShift instance with Mobile Services already installed.
+
 :penguin: Linux
 
 You may need to configure your firewall first:
