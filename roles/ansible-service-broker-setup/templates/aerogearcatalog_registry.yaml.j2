@@ -23,6 +23,13 @@ registry:
     white_list:
       - '.*keycloak-apb$'
   - type: dockerhub
+    name: ag-sync-app
+    url: https://registry.hub.docker.com
+    org: aerogearcatalog
+    tag: "{{ sync_app_apb|default('latest') }}"
+    white_list:
+      - '.*sync-app-apb$'      
+  - type: dockerhub
     name: ag-metrics
     url: https://registry.hub.docker.com
     org: aerogearcatalog
