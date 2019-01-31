@@ -29,4 +29,10 @@ registry:
     tag: "{{ metrics_apb|default('latest') }}"
     white_list:
       - '.*metrics-apb$'
-  
+  - type: dockerhub
+    name: ag-sync
+    url: https://registry.hub.docker.com
+    org: aerogearcatalog
+    tag: "{{ sync_app_apb|default('latest') }}"
+    white_list:
+      - '.*sync-app-apb$'
