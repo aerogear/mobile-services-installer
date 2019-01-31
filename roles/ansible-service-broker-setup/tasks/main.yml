@@ -29,21 +29,35 @@
     original_configmap: "{{ original_configmap|combine({ item.section: { item.name: item.value }}, recursive=True) }}"
   with_list: "{{ broker_mobile_configuration }}"
 
-- name: Get additional config of broker registry (from ../files)
+- name: Generate broker registry config from template
+  template:
+    src: ../templates/aerogearcatalog_registry.yaml.j2
+    dest: /tmp/aerogearcatalog_registry.yaml
+
+- name: Get additional config of broker registry (from /tmp/aerogearcatalog_registry.yaml)
   set_fact:
-    additional_registry_config: "{{ lookup('file', '../files/aerogearcatalog_registry.yaml') | from_yaml }}"
+    additional_registry_config: "{{ lookup('file', '/tmp/aerogearcatalog_registry.yaml') | from_yaml }}"
 
 - set_fact:
     additional_registry_config: "{{ additional_registry_config.registry }}"
+    additional_registry_config_names: []
+    
+- set_fact:
+    additional_registry_config_names: '{{ additional_registry_config_names + [item.name] }}'
+  with_list: "{{ additional_registry_config }}"
 
 - set_fact:
     new_registry_config: "{{ original_configmap.registry }}"
+    existing_registries: []
 
-- name: Add broker registry configuration from file (if it's not already present in original configmap)
+- name: List existing registries
   set_fact:
-    new_registry_config: '{{ new_registry_config + [item] }}'
-  with_list: "{{ additional_registry_config }}"
-  when: item not in new_registry_config
+     existing_registries: '{{ existing_registries + [item] }}'
+  with_list: "{{ new_registry_config }}"
+  when: item.name not in additional_registry_config_names
+
+- set_fact:
+    new_registry_config: '{{ existing_registries + additional_registry_config }}'
 
 - set_fact:
     new_configmap: "{{ original_configmap|combine({ 'registry': new_registry_config }, recursive=True) }}"

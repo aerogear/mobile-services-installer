@@ -1,0 +1,32 @@
+---
+
+registry:
+  - type: dockerhub
+    name: ag-mdc
+    url: https://registry.hub.docker.com
+    org: aerogearcatalog
+    tag: "{{ mobile_developer_console_apb|default('latest') }}"
+    white_list:
+      - '.*mobile-developer-console-apb$'
+  - type: dockerhub
+    name: ag-push
+    url: https://registry.hub.docker.com
+    org: aerogearcatalog
+    tag: "{{ unifiedpush_apb|default('latest') }}"
+    white_list:
+      - '.*unifiedpush-apb$'
+  - type: dockerhub
+    name: ag-keycloak
+    url: https://registry.hub.docker.com
+    org: aerogearcatalog
+    tag: "{{ keycloak_apb|default('latest') }}"
+    white_list:
+      - '.*keycloak-apb$'
+  - type: dockerhub
+    name: ag-metrics
+    url: https://registry.hub.docker.com
+    org: aerogearcatalog
+    tag: "{{ metrics_apb|default('latest') }}"
+    white_list:
+      - '.*metrics-apb$'
+  
