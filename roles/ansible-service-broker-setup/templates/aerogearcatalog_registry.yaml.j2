@@ -21,6 +21,7 @@ registry:
     org: aerogearcatalog
     tag: "{{ keycloak_apb|default('latest') }}"
     white_list:
+      - '.*keycloak-apb$'
   - type: "{{ ansible_playbookbundle_registry_type | default('dockerhub') }}"
     name: ag-metrics
     url: "{{ ansible_playbookbundle_registry_url }}"
