@@ -2,8 +2,12 @@ Here are the steps to release an APB:
 
 1. Check the apb.yml file inside the APB repo to make sure it is up to date. 
     - To change the icon for the APB, change the value in `metadata.imageUrl`. NOTE: you can also use base64 encoded value. For example: `imageUrl: "data:image/png;base64,<based64 encoded content>".
-2. Update the Dockerfile by running `apb build`. NOTE: some repos also have mutliple docker files for productisation process, you need to manualy copy changes over from one to another, espeically the value for `com.redhat.apb.spec`. It is base64 encoded content.
-3. Verify the APB by building an image and deploy it somewhere. If `apb push` works for you, you should be easily verify it locally. Otherwise you may need to build an image with the docker file, and push it to a remote registry. Then change the registry in [aerogearcatalog_registry.yaml.j2](./roles/ansible-service-broker-setup/templates/aerogearcatalog_registry.yaml.j2), and ran the installer. To force the service catalog to be refreshed, ran the following command:
+2. Update the Dockerfile by running 
+    ````
+    apb bundle prepare -c Dockerfile
+    apb bundle prepare -c Dockerfile.rhel7
+    ````
+3. Verify the APB by building an image and deploy it somewhere. If `apb build` and `apb push` works for you, you should be easily verify it locally. Otherwise you may need to build an image with the docker file, and push it to a remote registry. Then change the registry in [aerogearcatalog_registry.yaml.j2](./roles/ansible-service-broker-setup/templates/aerogearcatalog_registry.yaml.j2), and ran the installer. To force the service catalog to be refreshed, ran the following command:
     ```
     oc get clusterservicebroker ansible-service-broker -o=json > broker.json
     oc delete clusterservicebroker ansible-service-broker
