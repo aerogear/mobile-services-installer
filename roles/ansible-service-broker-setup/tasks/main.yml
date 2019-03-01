@@ -29,14 +29,24 @@
     original_configmap: "{{ original_configmap|combine({ item.section: { item.name: item.value }}, recursive=True) }}"
   with_list: "{{ broker_mobile_configuration }}"
 
+- name: Check if we should use rhcc registry template
+  set_fact:
+    registry_template_file: "../templates/rhcc_registry.yaml.j2"
+  when: ansible_playbookbundle_registry_type == 'rhcc'
+
+- name: Check if we should use aerogearcatalog registry template
+  set_fact:
+    registry_template_file: "../templates/aerogearcatalog_registry.yaml.j2"
+  when: ansible_playbookbundle_registry_type != 'rhcc'
+  
 - name: Generate broker registry config from template
   template:
-    src: ../templates/aerogearcatalog_registry.yaml.j2
-    dest: /tmp/aerogearcatalog_registry.yaml
+    src: "{{ registry_template_file }}"
+    dest: /tmp/registry_template_file.yaml
 
-- name: Get additional config of broker registry (from /tmp/aerogearcatalog_registry.yaml)
+- name: Get additional config of broker registry (from /tmp/registry_template_file.yaml)
   set_fact:
-    additional_registry_config: "{{ lookup('file', '/tmp/aerogearcatalog_registry.yaml') | from_yaml }}"
+    additional_registry_config: "{{ lookup('file', '/tmp/registry_template_file.yaml') | from_yaml }}"
 
 - set_fact:
     additional_registry_config: "{{ additional_registry_config.registry }}"
