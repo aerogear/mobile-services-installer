@@ -1,0 +1,10 @@
+---
+registry:
+  - type: rhcc
+    name: rhcc-mobile
+    auth_name: "{{ rhcc_registry_auth_name  }}"
+    auth_type: "{{ rhcc_registry_auth_type  }}"
+    tag: "{{ rhcc_registry_tag }}"
+    url: "{{ rhcc_registry_url }}"
+    white_list:
+      - mobile-.*-apb$
