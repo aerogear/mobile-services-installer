@@ -3,7 +3,7 @@
 aerogear_mobile_services: "1.0.0"
 mobile_developer_console_apb: "1.0.0"
 unifiedpush_apb: "1.0.1"
-keycloak_apb: "1.0.0"
+keycloak_apb: "1.1.0"
 metrics_apb: "1.0.0"
 sync_app_apb: "1.0.0"
 js_sdk_app: "2.0.1"
