@@ -13,3 +13,6 @@ broker_mobile_configuration:
 
 #The url for the registry that hosts our APB images
 ansible_playbookbundle_registry_url: https://registry.hub.docker.com
+
+#The organisation that our APB images are in
+ansible_playbook_bundle_registry_org: aerogearcatalog
