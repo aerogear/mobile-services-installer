@@ -6,12 +6,28 @@ unifiedpush_apb: "1.0.1"
 keycloak_apb: "1.1.0"
 metrics_apb: "1.1.1"
 sync_app_apb: "1.1.0"
-js_sdk_app: "2.0.1"
-js_sdk_core: "2.0.1"
-js_sdk_auth: "2.0.0"
-js_sdk_push: "2.0.0"
-js_sdk_security: "2.0.0"
-js_sdk_cordova_plugin_aerogear_metrics: "2.0.0"
-js_sdk_cordova_plugin_aerogear_push: "2.0.0"
-js_sdk_cordova_plugin_aerogear_security: "2.0.0"
 rhcc_release_tag: "1.0"
+
+# https://github.com/aerogear/aerogear-js-sdk
+js_sdk_app: "2.2.0"
+js_sdk_core: "2.2.0"
+js_sdk_auth: "2.2.0"
+js_sdk_push: "2.2.0"
+js_sdk_security: "2.2.0"
+js_sdk_sync: "2.2.0"
+js_sdk_cordova_plugin_aerogear_metrics: "2.2.0"
+js_sdk_cordova_plugin_aerogear_push: "2.2.0"
+js_sdk_cordova_plugin_aerogear_security: "2.2.0"
+
+# https://github.com/aerogear/ionic-showcase
+ionic_showcase: "0.3.0"
+voyager_server_example_task: "0.3.0"
+
+# https://github.com/aerogear/voyager-server
+voyager_audit: "0.5.0"
+voyager_conflicts: "0.5.0"
+voyager_keycloak: "0.5.0"
+voyager_metrics: "0.5.0"
+voyager_server: "0.5.0"
+voyager_tools: "0.5.0"
+ 
