@@ -4,35 +4,35 @@ registry:
   - type: "{{ ansible_playbookbundle_registry_type | default('dockerhub') }}"
     name: ag-mdc
     url: "{{ ansible_playbookbundle_registry_url }}"
-    org: aerogearcatalog
+    org: "{{ ansible_playbook_bundle_registry_org }}"
     tag: "{{ mobile_developer_console_apb|default('latest') }}"
     white_list:
       - '.*mobile-developer-console-apb$'
   - type: "{{ ansible_playbookbundle_registry_type | default('dockerhub') }}"
     name: ag-push
     url: "{{ ansible_playbookbundle_registry_url }}"
-    org: aerogearcatalog
+    org: "{{ ansible_playbook_bundle_registry_org }}"
     tag: "{{ unifiedpush_apb|default('latest') }}"
     white_list:
       - '.*unifiedpush-apb$'
   - type: "{{ ansible_playbookbundle_registry_type | default('dockerhub') }}"
     name: ag-keycloak
     url: "{{ ansible_playbookbundle_registry_url }}"
-    org: aerogearcatalog
+    org: "{{ ansible_playbook_bundle_registry_org }}"
     tag: "{{ keycloak_apb|default('latest') }}"
     white_list:
       - '.*keycloak-apb$'
   - type: "{{ ansible_playbookbundle_registry_type | default('dockerhub') }}"
     name: ag-metrics
     url: "{{ ansible_playbookbundle_registry_url }}"
-    org: aerogearcatalog
+    org: "{{ ansible_playbook_bundle_registry_org }}"
     tag: "{{ metrics_apb|default('latest') }}"
     white_list:
       - '.*metrics-apb$'
   - type: "{{ ansible_playbookbundle_registry_type | default('dockerhub') }}"
     name: ag-sync
     url: "{{ ansible_playbookbundle_registry_url }}"
-    org: aerogearcatalog
+    org: "{{ ansible_playbook_bundle_registry_org }}"
     tag: "{{ sync_app_apb|default('latest') }}"
     white_list:
       - '.*sync-app-apb$'
