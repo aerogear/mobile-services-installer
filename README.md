@@ -14,12 +14,29 @@ It also contains scripts for local development of Mobile Services (using `Minish
 
 1. Make sure you are targeting OpenShift instance with installed Ansible Service Broker (run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`)
 2. Run the installation playbook:
+    
+    If you want to use the community releases, run the following command:
 
-```
-ansible-playbook install-mobile-services.yml
-```
+    ```
+    ansible-playbook install-mobile-services.yml
+    ```
 
-3. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog.
+    If you want to use the productized releases from Red Hat Container Catalog, please use the following command:
+
+    ```
+    ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc"
+    ```
+
+    If authentication is required, you can set them via these variables: `rhcc_registry_auth_name` and `rhcc_registry_auth_type`. For more information about these variables, please check [this document](https://github.com/openshift/ansible-service-broker/blob/master/docs/config.md#registry-configuration).
+
+3. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
+
+    ```
+    oc get clusterservicebroker ansible-service-broker -o=json > broker.json
+    oc delete clusterservicebroker ansible-service-broker
+    oc create -f broker.json
+    ```
+
 4. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
 
 ## Local development
