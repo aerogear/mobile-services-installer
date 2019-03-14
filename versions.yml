@@ -24,10 +24,10 @@ ionic_showcase: "0.4.0"
 voyager_server_example_task: "0.3.0"
 
 # https://github.com/aerogear/voyager-server
-voyager_audit: "0.5.0"
-voyager_conflicts: "0.5.0"
-voyager_keycloak: "0.5.0"
-voyager_metrics: "0.5.0"
-voyager_server: "0.5.0"
-voyager_tools: "0.5.0"
+voyager_audit: "0.5.1"
+voyager_conflicts: "0.5.1"
+voyager_keycloak: "0.5.1"
+voyager_metrics: "0.5.1"
+voyager_server: "0.5.1"
+voyager_tools: "0.5.1"
  
