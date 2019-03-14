@@ -1,7 +1,7 @@
 ---
 
 aerogear_mobile_services: "2.0.0-alpha"
-mobile_developer_console_apb: "1.0.1"
+mobile_developer_console_apb: "1.0.2"
 unifiedpush_apb: "1.0.2"
 keycloak_apb: "1.2.0"
 metrics_apb: "1.1.2"
