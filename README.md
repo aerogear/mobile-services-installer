@@ -21,13 +21,13 @@ It also contains scripts for local development of Mobile Services (using `Minish
     ansible-playbook install-mobile-services.yml
     ```
 
-    If you want to use the productized releases from Red Hat Container Catalog, please use the following command:
+    If you want to use the productized releases from Red Hat Container Catalog, please make sure you first follow the instructions on [this page](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html) to ensure that your OpenShift cluster is configured to be able to pull from registry.redhat.io.
+    
+    Additionally, create a secret that will store the credentials, as described [here](https://docs.openshift.com/container-platform/3.11/install_config/oab_broker_configuration.html#oab-config-registry-storing-creds), and then use the following command:
 
     ```
-    ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc"
+    ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc" -e "rhcc_registry_auth_name=<name of the secret>"
     ```
-
-    If authentication is required, you can set them via these variables: `rhcc_registry_auth_name` and `rhcc_registry_auth_type`. For more information about these variables, please check [this document](https://github.com/openshift/ansible-service-broker/blob/master/docs/config.md#registry-configuration).
 
 3. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
 
