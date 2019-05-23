@@ -1,7 +1,6 @@
 # Mobile Services Installer
 
 This repo contains ansible playbook for installing Mobile Services into existing OpenShift 3.11 instance.
-
 It also contains scripts for local development of Mobile Services (using `Minishift` or `oc cluster up`).
 
 ### Prerequisites:
@@ -14,7 +13,8 @@ It also contains scripts for local development of Mobile Services (using `Minish
 
 1. Open a terminal and login to the OpenShift target.
 2. To ensure you are targeting OpenShift instance with the  Ansible Service Broker installed, run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`.
-2. Run the installation playbook:
+3. Use git to clone https://github.com/aerogear/mobile-services-installer and cd into the repo.
+4. Run the installation playbook:
 
     If you want to use the community releases, run the following command:
 
@@ -30,7 +30,7 @@ It also contains scripts for local development of Mobile Services (using `Minish
     ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc" -e "rhcc_registry_auth_name=<name of the secret>"
     ```
 
-3. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
+5. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
 
     ```
     oc get clusterservicebroker ansible-service-broker -o=json > broker.json
@@ -38,7 +38,7 @@ It also contains scripts for local development of Mobile Services (using `Minish
     oc create -f broker.json
     ```
 
-4. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
+6. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
 
 ## Local development
 
