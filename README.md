@@ -1,7 +1,6 @@
 # Mobile Services Installer
 
-This repo contains ansible playbook for installing Mobile Services into existing OpenShift 3.11 instance. 
-
+This repo contains ansible playbook for installing Mobile Services into existing OpenShift 3.11 instance.
 It also contains scripts for local development of Mobile Services (using `Minishift` or `oc cluster up`).
 
 ### Prerequisites:
@@ -12,9 +11,11 @@ It also contains scripts for local development of Mobile Services (using `Minish
 
 ## Installation
 
-1. Make sure you are targeting OpenShift instance with installed Ansible Service Broker (run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`)
-2. Run the installation playbook:
-    
+1. Open a terminal and log in to an OpenShift target.
+2. To ensure you are targeting an OpenShift instance with the Ansible Service Broker installed, run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`.
+3. Use `git` to clone https://github.com/aerogear/mobile-services-installer and `cd` into the repo.
+4. Run the installation playbook:
+
     If you want to use the community releases, run the following command:
 
     ```
@@ -22,14 +23,14 @@ It also contains scripts for local development of Mobile Services (using `Minish
     ```
 
     If you want to use the productized releases from Red Hat Container Catalog, please make sure you first follow the instructions on [this page](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html) to ensure that your OpenShift cluster is configured to be able to pull from registry.redhat.io.
-    
+
     Additionally, create a secret that will store the credentials, as described [here](https://docs.openshift.com/container-platform/3.11/install_config/oab_broker_configuration.html#oab-config-registry-storing-creds), and then use the following command:
 
     ```
     ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc" -e "rhcc_registry_auth_name=<name of the secret>"
     ```
 
-3. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
+5. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
 
     ```
     oc get clusterservicebroker ansible-service-broker -o=json > broker.json
@@ -37,7 +38,7 @@ It also contains scripts for local development of Mobile Services (using `Minish
     oc create -f broker.json
     ```
 
-4. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
+6. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
 
 ## Local development
 
