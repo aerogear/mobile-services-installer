@@ -11,9 +11,9 @@ It also contains scripts for local development of Mobile Services (using `Minish
 
 ## Installation
 
-1. Open a terminal and login to the OpenShift target.
-2. To ensure you are targeting OpenShift instance with the  Ansible Service Broker installed, run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`.
-3. Use git to clone https://github.com/aerogear/mobile-services-installer and cd into the repo.
+1. Open a terminal and log in to an OpenShift target.
+2. To ensure you are targeting an OpenShift instance with the Ansible Service Broker installed, run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`.
+3. Use `git` to clone https://github.com/aerogear/mobile-services-installer and `cd` into the repo.
 4. Run the installation playbook:
 
     If you want to use the community releases, run the following command:
