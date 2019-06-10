@@ -1,0 +1,10 @@
+---
+
+- name: Copy service template file for service {{ item }}
+  template: 
+    src: "{{ item }}.json.j2"
+    dest: /tmp/{{ item }}.json
+
+- name: Provision service {{ item }}
+  shell: oc apply -f /tmp/{{ item }}.json -n {{ namespace }}
+   

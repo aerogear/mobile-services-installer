@@ -1,0 +1,85 @@
+---
+
+- name: Check namespace doesn't already exist
+  shell: oc get namespace {{ namespace }}
+  register: namespace_exists
+  failed_when: namespace_exists.stderr != '' and 'NotFound' not in namespace_exists.stderr
+
+- name: Create namespace {{ namespace }} if it doesnt exist
+  shell: oc create namespace {{ namespace }}
+  when: namespace_exists.rc != 0
+
+- include_tasks: provision-service.yml
+  with_items: "{{ services }}"
+
+- name: Wait for all services to be ready
+  shell: oc get serviceinstance -o=jsonpath='{.items[*].status.conditions[0].status}' | tr ' ' '\n' | grep True | wc -w
+  register: ready_status_output
+  until: ready_status_output.stdout == "6"
+  retries: 50
+  delay: 10
+  failed_when: false
+  changed_when: false
+
+- name: Copy template for mobileclient CR
+  template:
+    src: mobileclient.json.j2
+    dest: /tmp/mobileclient.json
+
+- name: Create mobileclient
+  shell: oc apply -f /tmp/mobileclient.json -n {{ namespace }}
+
+- include_tasks: create-binding.yml
+  with_items:
+    - binding-idm-app
+    - binding-idm-showcase-server
+    - binding-metrics-app
+    - binding-sync-app
+
+- set_fact: bindings=4
+
+- name: Bind Push Android
+  block:
+    - include_tasks: create-binding.yml
+      with_items:
+        - binding-ups-app-android
+    - set_fact: bindings={{ bindings | int + 1}}
+  when: push_android_server_key != "" and push_android_sender_id != ""
+
+- name: Bind Push iOS
+  block:
+    - include_tasks: create-binding.yml
+      with_items:
+        - binding-ups-app-ios
+    - set_fact: bindings={{ bindings | int + 1}}
+  when: push_ios_cert_content != "" and push_ios_cert_passphase != "" and push_ios_cert_production != ""
+
+- name: Wait for all bindings to be completed
+  shell: oc get servicebindings -o=jsonpath='{.items[*].status.conditions[0].status}' | tr ' ' '\n' | grep True| wc -w
+  register: bindings_ready_status_output
+  until: bindings_ready_status_output.stdout == bindings|string
+  retries: 50
+  delay: 5
+  failed_when: false
+  changed_when: false
+
+- name: Patch Showcase-server
+  block:
+    - name: Copy showcase PVC template
+      template:
+        src: sync-storage.yaml.j2
+        dest: /tmp/sync-storage.yaml
+    
+    - name: Create PVC for showcase-server
+      shell: oc apply -f /tmp/sync-storage.yaml -n {{ namespace }}
+    
+    - name: Copy showcase-server patch template
+      template:
+        src: sync-patch.json.j2
+        dest: /tmp/sync-patch.json
+
+    - name: Patch deployment config for showcase-server
+      shell: oc patch dc/sync-app-showcase-server -p "$(cat /tmp/sync-patch.json)" -n {{ namespace }}
+
+- include_tasks: configure-keycloak.yml
+

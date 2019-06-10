@@ -1,0 +1,33 @@
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [{
+          "name": "sync-app-showcase-server",
+          "env": [{
+            "name": "KEYCLOAK_CONFIG",
+            "value": "/tmp/keycloak-config/config"
+          }],
+          "volumeMounts": [{
+            "name": "files-storage",
+            "mountPath": "/usr/src/app/files"
+          },{
+            "name": "keycloak-config",
+            "mountPath": "/tmp/keycloak-config"
+          }]
+        }],
+        "volumes": [{
+          "name": "files-storage",
+          "persistentVolumeClaim": {
+            "claimName": "showcase-server-file-storage"
+          }
+        }, {
+          "name": "keycloak-config",
+          "secret": {
+            "secretName": "keycloak-secret-showcase-server-bearer"
+          }
+        }]
+      }
+    }
+  }
+}

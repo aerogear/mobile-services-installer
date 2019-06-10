@@ -1,0 +1,212 @@
+---
+
+- name: Get keycloak route
+  shell: oc get route keycloak-route -o jsonpath={.spec.host}
+  register: keycloak_route_output
+
+- name: Get id for client showcase-public
+  shell: oc get secret keycloak-secret-showcase-public -o jsonpath={.data.id} | base64 --decode
+  register: public_client_id_output
+
+- set_fact:
+    PUBLIC_CLIENT_ID: "{{ public_client_id_output.stdout }}"
+
+- name: Generate keycloak auth token for admin user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/realms/master/protocol/openid-connect/token"
+    method: POST
+    body: "client_id=admin-cli&username=admin&password=admin&grant_type=password"
+    validate_certs: no
+  register: keycloak_auth_response
+  retries: 20
+  delay: 2
+  until: keycloak_auth_response.status == 503 or
+         keycloak_auth_response.status in [200, 401, 403]
+  ignore_errors: yes
+
+- name: Create new realm roles
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/roles"
+    method: POST
+    body: "{\"name\": \"{{ item }}\", \"clientRole\": false }"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [201, 409]
+  with_items:
+    - admin
+    - developer
+  ignore_errors: yes
+
+- name: Create new client roles
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/clients/{{PUBLIC_CLIENT_ID}}/roles"
+    method: POST
+    body: "{\"name\": \"{{ item }}\", \"clientRole\": true }"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [201, 409]
+  with_items:
+    - admin
+    - developer
+  ignore_errors: yes
+
+- name: Create admin user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users"
+    method: POST
+    body: "{\"username\": \"admin\", \"enabled\": true, \"credentials\":[{\"type\":\"password\", \"value\": \"admin\", \"temporary\": false}]}"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [201, 409]
+  ignore_errors: yes
+
+- name: Get admin user id
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users?briefRepresentation=true&username=admin"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200]
+    return_content: yes
+  register: admin_user_info
+  ignore_errors: yes
+
+- set_fact:
+    ADMIN_USER_ID:  "{{ admin_user_info.json[0].id }}"
+
+- name: Get admin realm role info
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/roles/admin"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200]
+    return_content: yes
+  register: admin_role_info
+  ignore_errors: yes
+
+- name: Get admin client role info
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/clients/{{PUBLIC_CLIENT_ID}}/roles/admin"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200]
+    return_content: yes
+  register: admin_client_role_info
+  ignore_errors: yes
+
+- name: Assign realm role to admin user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users/{{ADMIN_USER_ID}}/role-mappings/realm"
+    method: POST
+    body: "[{{ admin_role_info.json }}]"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200, 204]
+  ignore_errors: yes
+
+- name: Assign client role to admin user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users/{{ADMIN_USER_ID}}/role-mappings/clients/{{PUBLIC_CLIENT_ID}}"
+    method: POST
+    body: "[{{ admin_client_role_info.json }}]"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200, 204]
+  ignore_errors: yes
+
+- name: Create developer user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users"
+    method: POST
+    body: "{\"username\": \"developer\", \"enabled\": true, \"credentials\":[{\"type\":\"password\", \"value\": \"developer\", \"temporary\": false}]}"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [201, 409]
+  ignore_errors: yes
+
+- name: Get developer user id
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users?briefRepresentation=true&username=developer"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200]
+    return_content: yes
+  register: developer_user_info
+  ignore_errors: yes
+
+- set_fact:
+    DEVELOPER_USER_ID:  "{{ developer_user_info.json[0].id }}" 
+
+- name: Get developer realm role info
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/roles/developer"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200]
+    return_content: yes
+  register: developer_role_info
+  ignore_errors: yes
+
+- name: Get developer client role info
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/clients/{{PUBLIC_CLIENT_ID}}/roles/developer"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200]
+    return_content: yes
+  register: developer_client_role_info
+  ignore_errors: yes
+
+- name: Assign realm role to developer user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users/{{DEVELOPER_USER_ID}}/role-mappings/realm"
+    method: POST
+    body: "[{{ developer_role_info.json }}]"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200, 204]
+  ignore_errors: yes
+
+- name: Assign client role to developer user
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/users/{{DEVELOPER_USER_ID}}/role-mappings/clients/{{PUBLIC_CLIENT_ID}}"
+    method: POST
+    body: "[{{ developer_client_role_info.json }}]"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [200, 204]
+  ignore_errors: yes
+

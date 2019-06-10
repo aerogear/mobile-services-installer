@@ -1,0 +1,23 @@
+{
+  "apiVersion": "servicecatalog.k8s.io/v1beta1",
+  "kind": "ServiceBinding",
+  "metadata": {
+    "name": "mobile-idm-app-binding",
+    "labels": {
+      "mobileclients.mobile.k8s.io/clientId": "{{ appname }}"
+    },
+    "annotations": {
+      "binding.aerogear.org/consumer": "{{ appname }}",
+      "binding.aerogear.org/provider": "mobile-idm-service" 
+    }
+  },
+  "spec": {
+    "instanceRef": {
+      "name": "mobile-idm-service"
+    },
+    "parameters": {
+      "CLIENT_ID": "{{ appname }}",
+      "CLIENT_TYPE": "public"
+    }
+  }
+}

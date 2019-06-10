@@ -1,0 +1,9 @@
+---
+
+- name: Copy ServiceBinding template {{ item }}
+  template:
+    src: "{{ item }}.json.j2"
+    dest: "/tmp/{{ item }}.json"
+
+- name: Create ServiceBinding instance {{ item }}
+  shell: oc apply -f /tmp/{{ item }}.json -n {{ namespace }}
