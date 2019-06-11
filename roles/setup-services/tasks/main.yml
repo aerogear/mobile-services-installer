@@ -16,7 +16,7 @@
   shell: oc get serviceinstance -o=jsonpath='{.items[*].status.conditions[0].status}' -n {{namespace}} | tr ' ' '\n' | grep True | wc -w
   register: ready_status_output
   until: ready_status_output.stdout == "6"
-  retries: 50
+  retries: 100
   delay: 10
   failed_when: false
   changed_when: false
