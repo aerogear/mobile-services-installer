@@ -1,11 +1,11 @@
 ---
 
 - name: Get keycloak route
-  shell: oc get route keycloak-route -o jsonpath={.spec.host}
+  shell: oc get route keycloak-route -o jsonpath={.spec.host} -n {{namespace}}
   register: keycloak_route_output
 
 - name: Get id for client showcase-public
-  shell: oc get secret keycloak-secret-showcase-public -o jsonpath={.data.id} | base64 --decode
+  shell: oc get secret keycloak-secret-showcase-public -o jsonpath={.data.id} -n {{namespace}} | base64 --decode
   register: public_client_id_output
 
 - set_fact:

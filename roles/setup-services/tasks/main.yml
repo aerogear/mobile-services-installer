@@ -13,7 +13,7 @@
   with_items: "{{ services }}"
 
 - name: Wait for all services to be ready
-  shell: oc get serviceinstance -o=jsonpath='{.items[*].status.conditions[0].status}' | tr ' ' '\n' | grep True | wc -w
+  shell: oc get serviceinstance -o=jsonpath='{.items[*].status.conditions[0].status}' -n {{namespace}} | tr ' ' '\n' | grep True | wc -w
   register: ready_status_output
   until: ready_status_output.stdout == "6"
   retries: 50
@@ -55,7 +55,7 @@
   when: push_ios_cert_content != "" and push_ios_cert_passphase != "" and push_ios_cert_production != ""
 
 - name: Wait for all bindings to be completed
-  shell: oc get servicebindings -o=jsonpath='{.items[*].status.conditions[0].status}' | tr ' ' '\n' | grep True| wc -w
+  shell: oc get servicebindings -o=jsonpath='{.items[*].status.conditions[0].status}' -n {{namespace}} | tr ' ' '\n' | grep True| wc -w
   register: bindings_ready_status_output
   until: bindings_ready_status_output.stdout == bindings|string
   retries: 50
