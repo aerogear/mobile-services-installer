@@ -40,6 +40,34 @@ It also contains scripts for local development of Mobile Services (using `Minish
 
 6. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
 
+## Setup services for demo
+
+If you want to also setup all the required services for a demo, you can run this playbook:
+
+```
+ansible-playbook setup-demo.yml
+```
+
+This playbook will:
+
+* Provision all the mobile services into a namespace, including showcase server.
+* Create a mobile client for the showcase app.
+* Bind all the available services to the showcase app (if no push information is provided, then push service won't be bound)
+* Make sure the showcase server app is protected by the IDM service, and supports file upload.
+* Setup the following users in the IDM service
+  * User 1:
+    * username: admin
+    * password: admin
+    * realm role: admin
+    * client role for the showcase app: admin
+  * User 2:
+    * username: developer
+    * password: developer
+    * realm role: developer
+    * client role for the showcase app: developer
+
+You can then login to the Mobile Developer Console and copy the configuration for the showcase app, and paste it into the `mobile-services.json` file for the showcase client app.
+
 ## Local development
 
 By following next steps, you can spin up your local OpenShift instance with Mobile Services already installed.
