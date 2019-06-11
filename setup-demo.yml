@@ -1,0 +1,6 @@
+---
+
+- name: Setup Mobile Services Demo
+  hosts: localhost
+  roles:
+  - role: setup-services

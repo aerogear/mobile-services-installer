@@ -1,0 +1,26 @@
+{
+  "apiVersion": "servicecatalog.k8s.io/v1beta1",
+  "kind": "ServiceBinding",
+  "metadata": {
+    "name": "mobile-ups-app-android-binding",
+    "labels": {
+      "mobileclients.mobile.k8s.io/clientId": "{{ appname }}"
+    },
+    "annotations": {
+      "binding.aerogear.org/consumer": "{{ appname }}",
+      "binding.aerogear.org/provider": "mobile-push",
+      "mobile.aerogear.org/platform": "android" 
+    }
+  },
+  "spec": {
+    "instanceRef": {
+      "name": "mobile-push"
+    },
+    "parameters": {
+      "CLIENT_ID": "{{ appname }}",
+      "CLIENT_TYPE": "Android",
+      "googlekey": "{{ push_android_server_key }}", 
+      "projectNumber": "{{ push_android_sender_id }}"
+    }
+  }
+}
