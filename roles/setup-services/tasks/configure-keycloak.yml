@@ -44,7 +44,7 @@
 - name: Update keycloak with new public client JSON
   uri:
     url: "https://{{ keycloak_route_output.stdout }}auth/admin/realms/mobile/clients/{{PUBLIC_CLIENT_ID}}"
-    method: POST
+    method: PUT
     body: "{{public_client_updated_json}}"
     validate_certs: no
     body_format: json
