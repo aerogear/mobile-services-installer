@@ -32,7 +32,7 @@
     body_format: json
     headers:
       Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
-    status_code: [201, 409]
+    status_code: [200]
   register: public_client_original_json
   ignore_errors: yes
 
@@ -50,7 +50,7 @@
     body_format: json
     headers:
       Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
-    status_code: [201, 409]
+    status_code: [204]
   ignore_errors: yes
 
 - name: Create new realm roles
