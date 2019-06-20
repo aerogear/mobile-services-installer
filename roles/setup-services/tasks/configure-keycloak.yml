@@ -24,6 +24,35 @@
          keycloak_auth_response.status in [200, 401, 403]
   ignore_errors: yes
 
+- name: Fetch public client JSON from keycloak
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}auth/admin/realms/mobile/clients/{{PUBLIC_CLIENT_ID}}"
+    method: GET
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [201, 409]
+  register: public_client_original_json
+  ignore_errors: yes
+
+- name: Create new public client JSON with updated webOrigins & redirectUris
+  command: >
+      jq '.webOrigins=["ionic://localhost","http://localhost","http://localhost:8100"] | .redirectUris=["http://localhost:*", "http://localhost"]' "{{public_client_original_json}}"
+  register: public_client_updated_json
+
+- name: Update keycloak with new public client JSON
+  uri:
+    url: "https://{{ keycloak_route_output.stdout }}auth/admin/realms/mobile/clients/{{PUBLIC_CLIENT_ID}}"
+    method: POST
+    body: "{{public_client_updated_json}}"
+    validate_certs: no
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
+    status_code: [201, 409]
+  ignore_errors: yes
+
 - name: Create new realm roles
   uri:
     url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/roles"
