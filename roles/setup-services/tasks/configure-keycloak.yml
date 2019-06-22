@@ -26,26 +26,29 @@
 
 - name: Fetch public client JSON from keycloak
   uri:
-    url: "https://{{ keycloak_route_output.stdout }}auth/admin/realms/mobile/clients/{{PUBLIC_CLIENT_ID}}"
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/clients/{{PUBLIC_CLIENT_ID}}"
     method: GET
     validate_certs: no
     body_format: json
     headers:
       Authorization: "Bearer {{ keycloak_auth_response.json.access_token }}"
     status_code: [200]
-  register: public_client_original_json
+  register: public_client_original
   ignore_errors: yes
 
-- name: Create new public client JSON with updated webOrigins & redirectUris
+- name: Write keycloak client JSON to file
+  copy: content="{{public_client_original.json}}" dest=/tmp/keycloak-client-original.json
+
+- name: Create new keycloak client JSON with updated webOrigins & redirectUris
   command: >
-      jq '.webOrigins=["ionic://localhost","http://localhost","http://localhost:8100"] | .redirectUris=["http://localhost:*", "http://localhost"]' "{{public_client_original_json}}"
+    jq '.webOrigins=["ionic://localhost","http://localhost","http://localhost:8100"] | .redirectUris=["http://localhost:*", "http://localhost"]' /tmp/keycloak-client-original.json
   register: public_client_updated_json
 
-- name: Update keycloak with new public client JSON
+- name: Update keycloak client JSON with new public client JSON
   uri:
-    url: "https://{{ keycloak_route_output.stdout }}auth/admin/realms/mobile/clients/{{PUBLIC_CLIENT_ID}}"
+    url: "https://{{ keycloak_route_output.stdout }}/auth/admin/realms/{{namespace}}/clients/{{PUBLIC_CLIENT_ID}}"
     method: PUT
-    body: "{{public_client_updated_json}}"
+    body: "{{public_client_updated_json.stdout}}"
     validate_certs: no
     body_format: json
     headers:
