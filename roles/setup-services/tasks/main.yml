@@ -1,5 +1,8 @@
 ---
 
+- name: Verify jq is installed
+  shell: which jq
+
 - name: Check namespace doesn't already exist
   shell: oc get namespace {{ namespace }}
   register: namespace_exists
