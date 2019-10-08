@@ -3,11 +3,13 @@
 - name: Install Mobile Services to an OpenShift cluster
   hosts: localhost
   roles:
+  - role: prerequisites
   - role: namespace
   - role: pull-secrets
   - role: idm
   - role: ups
   - role: mss
+  - role: mdc
   vars_files:
   - ./versions.yml 
   - ./variables.yml

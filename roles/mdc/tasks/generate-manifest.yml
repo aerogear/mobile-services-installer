@@ -1,0 +1,118 @@
+---
+- set_fact:
+    mobile_components: []
+
+#mobile security service(mss)
+- name: Get Mobile Security Service rest route
+  shell: oc get route/route -o template --template \{\{.spec.host\}\} -n {{ mobile_services_namespace }}
+  register: mss_route_cmd
+
+- set_fact:
+    mss_route: "https://{{mss_route_cmd.stdout}}"
+
+- name: Set Mobile Security Service component
+  set_fact:
+    mss_manifest:
+      - name: Mobile Security Service
+        version: "{{ mss_version }}"
+        host: "{{ mss_route }}"
+        mobile: true
+        type: "security"
+
+- set_fact:
+    mobile_components: "{{mobile_components}} + {{ mss_manifest }}"
+
+#unified push server(ups)
+- name: Unified Push Server
+  block:
+    - name: Get Unified Push Server route
+      shell: oc get route/unifiedpush-unifiedpush-proxy  -o template --template \{\{.spec.host\}\} -n {{ mobile_services_namespace }}
+      register: ups_route_cmd
+    - set_fact:
+        ups_route: "https://{{ups_route_cmd.stdout}}"
+    - name: Set Unified Push Server component
+      set_fact:
+        ups_manifest:
+          - name: Unified Push Server
+            version: "{{ ups }}"
+            host: "{{ ups_route }}"
+            mobile: true
+            type: "push"
+    - set_fact:
+        mobile_components: "{{ mobile_components }} + {{ ups_manifest }}"
+
+#IDM
+- name: Identity Management Service
+  block:
+    - name: Get IDM server route
+      shell: oc get route/sso  -o template --template \{\{.spec.host\}\} -n {{ mobile_services_namespace }}
+      register: sso_route_cmd
+    - set_fact:
+        sso_route: "https://{{sso_route_cmd.stdout}}"
+    - name: Set IDM component
+      set_fact:
+        idm_manifest:
+          - name: Identity Management
+            version: "{{ idm }}"
+            host: "{{ sso_route }}"
+            mobile: true
+            type: "keycloak"
+    - set_fact:
+        mobile_components: "{{ mobile_components }} + {{ idm_manifest }}"
+
+# mobile developer console (mdc)
+- name: Mobile Developer Console
+  block:
+    - name: Get mdc secure route
+      shell: "oc get route/mdc-mdc-proxy -o jsonpath='{.spec.host}' -n {{ mobile_services_namespace }}"
+      register: mdc_route_cmd
+    - set_fact:
+        mdc_route: "https://{{mdc_route_cmd.stdout}}"
+    - name: Set Mobile Developer Console component
+      set_fact:
+        mdc_manifest:
+          - name: Mobile Developer Console
+            version: "{{ mdc }}"
+            host: "{{ mdc_route }}"
+    - set_fact:
+        mobile_components: "{{ mobile_components }} + {{ mdc_manifest }}"
+
+- name: generate manifest file
+  template: 
+    src: manifest.j2
+    dest: /tmp/manifest.json
+
+- name: Create manifest secret file
+  shell: oc create secret generic manifest --from-file=generated_manifest=/tmp/manifest.json --type=application/json -n {{ mobile_services_namespace }}
+  register: result
+  failed_when: result.stderr != '' and 'AlreadyExists' not in result.stderr         
+
+- name: Get mdc deployment config
+  shell: "oc get dc/mdc -o json -n {{ mobile_services_namespace }}"
+  register: mdc_get_dc_cmd
+
+- name: patch mdc dc
+  mdc_patch_manifest:
+    env_var: MOBILE_SERVICES_CONFIG_FILE
+    path: '/etc/mdc/servicesConfig.json'
+    secret_name: manifest
+    dc: "{{ mdc_get_dc_cmd.stdout|from_json }}"
+  register: mdc_patch_dc
+
+- name: Apply changes in mdc deployment config
+  block:
+    - name: Write new dc definition file
+      copy:
+        content: "{{ mdc_patch_dc.data }}"
+        dest: "/tmp/mdc.json"
+    - name: Apply dc changes
+      shell: "oc apply -f /tmp/mdc.json -n {{ mobile_services_namespace }}"
+    - name: Wait for mdc rollout
+      shell: "oc rollout status dc/mdc -n {{ mobile_services_namespace }} --watch=false | grep 'rolled out'"
+      register: result
+      until: result.stdout
+      retries: 50
+      delay: 10
+      failed_when: result.stderr
+      changed_when: False
+  when: mdc_patch_dc.changed
