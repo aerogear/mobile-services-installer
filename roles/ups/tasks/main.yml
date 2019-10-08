@@ -1,0 +1,45 @@
+---
+- name: Install ups resources
+  shell: "oc apply -f {{ item }} -n {{ mobile_services_namespace }}"
+  with_items: "{{ ups_resources }}"
+
+- name: Copy role binding template
+  template:
+    src: role_binding.yml.j2
+    dest: "/tmp/role-binding.yml"
+
+- name: Create role binding
+  shell: "oc apply -f /tmp/role-binding.yml -n {{ mobile_services_namespace }}"
+
+- name: Delete role binding temporary file
+  file:
+    path: "/tmp/role-binding.yml"
+    state: absent
+
+- name: Process operator template
+  template:
+    src: operator.yml.j2
+    dest: "/tmp/ups-operator.yml"
+
+- name: Provision ups operator
+  shell: "oc apply -f /tmp/ups-operator.yml -n {{ mobile_services_namespace }}"
+
+- name: Delete operator temporary file
+  file:
+    path: "/tmp/ups-operator.yml"
+    state: absent
+
+- name: Process ups server template
+  template:
+    src: unifiedpushserver.yml.j2
+    dest: "/tmp/unifiedpushserver.yml"
+
+- name: Apply ups server resource
+  shell: "oc apply -f /tmp/unifiedpushserver.yml -n {{ mobile_services_namespace }}"
+  register: output
+  failed_when: output.stderr != '' and 'AlreadyExists' not in output.stderr
+
+- name: Delete ups temporary file
+  file:
+    path: "/tmp/unifiedpushserver.yml"
+    state: absent

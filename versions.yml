@@ -1,6 +1,9 @@
 ---
 # The file contains the versions of all the components. It is recommended that you don't change these values.
 idm_operator: "v1.9.2"
+ups: "2.3"
+ups_operator: "0.2.0"
+ups_proxy: "v1.1.0"
 
 # https://github.com/aerogear/aerogear-js-sdk
 js_sdk_app: "2.3.1"
