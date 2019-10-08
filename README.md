@@ -4,7 +4,7 @@ This repo contains ansible playbook for installing Mobile Services into existing
 It also contains scripts for local development of Mobile Services (using `Minishift` or `oc cluster up`).
 
 ### Prerequisites:
-* Ansible 2.7.6
+* Ansible version 2.7.6 and above
 * Running instance of OpenShift 3.11
   * If you are using minishift, it is recommended to allocate at least 6 vCPUs and 6GB of memory to it.
 * Cluster-admin access to targeted OpenShift instance
