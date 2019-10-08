@@ -1,0 +1,4 @@
+---
+- fail:
+    msg: "openshift_master_url is required"
+  when: (openshift_master_url is not defined) or (openshift_master_url|length == 0) 
