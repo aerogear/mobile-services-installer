@@ -1,0 +1,56 @@
+---
+- name: Create Mobile Security Service Operator Resources
+  shell: "oc apply -f {{ item }} -n {{ mobile_services_namespace }}"
+  with_items: "{{ mobile_security_service_operator_resource_items }}"
+
+- name: Copy cluster role binding template
+  template:
+    src: cluster_role_binding.yml.j2
+    dest: /tmp/mss_cluster_role_binding.yml
+
+- name: Create cluster role binding
+  shell: "oc apply -f /tmp/mss_cluster_role_binding.yml -n {{ mobile_services_namespace }}"
+
+- name: Delete cluster role binding template
+  file: 
+    path: /tmp/mss_cluster_role_binding.yml 
+    state: absent
+
+- name: Generate Mobile Security Service operator template
+  template:
+    src: "operator.yml.j2"
+    dest: /tmp/mobile-security-service-operator.yml
+
+- name: Create Mobile Security Service Operator
+  shell: "oc apply -f /tmp/mobile-security-service-operator.yml -n {{ mobile_services_namespace }}"
+
+- name: "Wait for Operator pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobile-security-service-operator -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w"
+  register: mobile_security_service_operator_result
+  until: mobile_security_service_operator_result.stdout.find("1") != -1
+  retries: 50
+  delay: 10
+
+- name: "Delete operator Template File"
+  file: path=/tmp/mobile-security-service-operator.yml state=absent
+
+- name: Create Mobile Security Service DB custom resource
+  shell: oc apply -f {{ mobile_security_service_operator_resources }}/crds/mobile-security-service_v1alpha1_mobilesecurityservicedb_cr.yaml -n {{ mobile_services_namespace }}
+
+- name: "Wait for Mobile Security Service DB pods to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobilesecurityservicedb -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w"
+  register: mobile_security_service_db_result
+  until: mobile_security_service_db_result.stdout.find("1") != -1
+  retries: 50
+  delay: 10
+
+- name: Create Mobile Security Service custom resource
+  shell: oc apply -f {{ mobile_security_service_operator_resources }}/crds/mobile-security-service_v1alpha1_mobilesecurityservice_cr.yaml -n {{ mobile_services_namespace }}
+
+- name: "Wait for Mobile Security Service pods to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobilesecurityservice -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w"
+  register: mobile_security_service_result
+  until: mobile_security_service_result.stdout.find("2") != -1
+  retries: 50
+  delay: 10
+
