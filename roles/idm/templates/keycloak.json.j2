@@ -1,0 +1,12 @@
+{
+  "apiVersion": "aerogear.org/v1alpha1",
+  "kind": "Keycloak",
+  "metadata": {
+    "name": "rhsso"
+  },
+  "spec": {
+    "adminCredentials": "",
+    "plugins": ["{{ rhsso_plugins | join('","') }}"],
+    "provision": true
+  }
+}

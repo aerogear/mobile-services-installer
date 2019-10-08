@@ -1,0 +1,18 @@
+---
+- name: Ensure registry username and password are set
+  fail:
+    msg: "username and password for the redhat registry is not set. \n Please check https://access.redhat.com/documentation/en-us/openshift_container_platform/3.11/html/configuring_clusters/install-config-configuring-red-hat-registry for more information."
+  when: (registry_username is undefined) or (registry_password is undefined) or (registry_username|length == 0) or (registry_password|length == 0)
+
+- name: Create imagestream pull secret in the openshft namespace
+  shell: "oc create secret docker-registry imagestreamsecret --docker-server='{{ registry_host }}' --docker-username='{{ registry_username }}' --docker-password='{{ registry_password }}' --docker-email=unused -n openshift"
+  register: secret_output
+  failed_when: secret_output.stderr != '' and 'AlreadyExists' not in secret_output.stderr
+
+- name: "Create image pull secret in the {{ mobile_services_namespace }} namespace"
+  shell: "oc create secret docker-registry imagestreamsecret --docker-server='{{ registry_host }}' --docker-username='{{ registry_username }}' --docker-password='{{ registry_password }}' --docker-email=unused -n {{ mobile_services_namespace }}"
+  register: secret_output
+  failed_when: secret_output.stderr != '' and 'AlreadyExists' not in secret_output.stderr
+
+- name: Link the secret for pulling images
+  shell: "oc secrets link default imagestreamsecret --for=pull -n {{ mobile_services_namespace }}"
