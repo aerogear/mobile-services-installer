@@ -1,6 +1,5 @@
 ---
-
-mobile_services_namespace: "mobile-developer-services"
+# The file contains the versions of all the components. It is recommended that you don't change these values.
 idm_operator: "v1.9.2"
 
 # https://github.com/aerogear/aerogear-js-sdk
