@@ -5,40 +5,29 @@ It also contains scripts for local development of Mobile Services (using `Minish
 
 ### Prerequisites:
 * Ansible 2.7.6
-* Running instance of OpenShift 3.11 with Ansible Service Broker
+* Running instance of OpenShift 3.11
+  * If you are using minishift, it is recommended to allocate at least 6 vCPUs and 6GB of memory to it.
 * Cluster-admin access to targeted OpenShift instance
 * `oc` client v3.11
+* A service account to access `https://registry.redhat.io`.
+  * This is because IDM service uses productized images that are stored in this registry.
+  * To get a service account, go to `https://registry.redhat.io`, then click on `Service Account` tab on the top right corner, and then login using your Red Hat developer account. Click on `New Service Account` to create a new one. Take note of the username and password.
+  * For more information, please check [Accessing and Configuring the Red Hat Registry](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html).
 
 ## Installation
 
-1. Open a terminal and log in to an OpenShift target.
-2. To ensure you are targeting an OpenShift instance with the Ansible Service Broker installed, run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`.
-3. Use `git` to clone https://github.com/aerogear/mobile-services-installer and `cd` into the repo.
-4. Run the installation playbook:
-
-    If you want to use the community releases, run the following command:
-
-    ```
-    ansible-playbook install-mobile-services.yml
-    ```
-
-    If you want to use the productized releases from Red Hat Container Catalog, please make sure you first follow the instructions on [this page](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html) to ensure that your OpenShift cluster is configured to be able to pull from registry.redhat.io.
-
-    Additionally, create a secret that will store the credentials, as described [here](https://docs.openshift.com/container-platform/3.11/install_config/oab_broker_configuration.html#oab-config-registry-storing-creds), and then use the following command:
-
-    ```
-    ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc" -e "rhcc_registry_auth_name=<name of the secret>"
-    ```
-
-5. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
-
-    ```
-    oc get clusterservicebroker ansible-service-broker -o=json > broker.json
-    oc delete clusterservicebroker ansible-service-broker
-    oc create -f broker.json
-    ```
-
-6. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
+. Open a terminal and log in to an OpenShift target.
+. Use `git` to clone https://github.com/aerogear/mobile-services-installer and `cd` into the repo.
+. Run the installation playbook:
+  
+  ```
+  ansible-playbook install-mobile-services.yml -e registry_username="<registry_service_account_username>" -e registry_password="<registry_service_account_password>"
+  ```
+. Once the installation is completed, wait for all the pods to be running in the `mobile-developer-services` namespace.
+  ```
+  oc get pods -w -n mobile-developer-services
+  ```
+. Once all the pods are running, you can then get the url of the mobile developer console and login.
 
 ## Setup services for demo
 

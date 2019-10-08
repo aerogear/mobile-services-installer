@@ -1,0 +1,20 @@
+---
+- include_role:
+    name: namespace
+
+- name: "Create required objects"
+  shell: "oc apply -f {{ item }} -n {{ mobile_services_namespace }}"
+  with_items: "{{ idm_operator_resource_items }}"
+
+- name: "Create IDM resource template"
+  template:
+    src: "keycloak.json.j2"
+    dest: "/tmp/keycloak.json"
+
+- name: "Create IDM resource"
+  shell: oc apply -f /tmp/keycloak.json -n {{ mobile_services_namespace }}
+
+- name: "Remove IDM template file"
+  file:
+    path: "/tmp/keycloak.json"
+    state: absent

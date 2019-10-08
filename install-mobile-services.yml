@@ -1,9 +1,10 @@
 ---
 
-- name: Install Mobile Services to existing OpenShift cluster
+- name: Install Mobile Services to an OpenShift cluster
   hosts: localhost
   roles:
-  - role: ansible-service-broker-setup
-  - role: create-mobile-client-crd
+  - role: namespace
+  - role: pull-secrets
+  - role: idm
   vars_files:
   - ./versions.yml 
