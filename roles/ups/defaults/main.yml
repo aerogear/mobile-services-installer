@@ -1,0 +1,13 @@
+ups_operator_image: 'quay.io/aerogear/unifiedpush-operator:{{ups_operator}}'
+ups_operator_resources: 'https://raw.githubusercontent.com/aerogear/unifiedpush-operator/{{ups_operator}}/deploy'
+ups_image: 'quay.io/aerogear/unifiedpush-configurable-container:{{ups}}'
+ups_proxy_image: 'docker.io/openshift/oauth-proxy:{{ups_proxy}}'
+ups_resources:
+  - "{{ ups_operator_resources }}/service_account.yaml"
+  - "{{ ups_operator_resources }}/role.yaml"
+  - "{{ ups_operator_resources }}/crds/push_v1alpha1_androidvariant_crd.yaml"
+  - "{{ ups_operator_resources }}/crds/push_v1alpha1_iosvariant_crd.yaml"
+  - "{{ ups_operator_resources }}/crds/push_v1alpha1_pushapplication_crd.yaml"
+  - "{{ ups_operator_resources }}/crds/push_v1alpha1_unifiedpushserver_crd.yaml"
+ups_operator_deployment: "{{ ups_operator_resources }}/operator.yaml"
+ups_server_name: unifiedpush
