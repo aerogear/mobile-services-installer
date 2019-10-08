@@ -8,3 +8,4 @@
   - role: idm
   vars_files:
   - ./versions.yml 
+  - ./variables.yml

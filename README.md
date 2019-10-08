@@ -11,7 +11,7 @@ It also contains scripts for local development of Mobile Services (using `Minish
 * `oc` client v3.11
 * A service account to access `https://registry.redhat.io`.
   * This is because IDM service uses productized images that are stored in this registry.
-  * To get a service account, go to `https://registry.redhat.io`, then click on `Service Account` tab on the top right corner, and then login using your Red Hat developer account. Click on `New Service Account` to create a new one. Take note of the username and password.
+  * To get a service account, go to `https://registry.redhat.io`, then click on `Service Accounts` tab on the top right corner, and then login using your Red Hat developer account. Click on `New Service Account` to create a new one. Take note of the username and password.
   * For more information, please check [Accessing and Configuring the Red Hat Registry](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html).
 
 ## Installation
