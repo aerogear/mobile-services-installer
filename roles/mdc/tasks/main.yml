@@ -27,4 +27,6 @@
   register: mdc_route_cmd
 
 - debug:
-    msg: "Mobile developer console url: https://{{ mdc_route_cmd.stdout }}. \nIf this is the first time you run the installation, you also need to update CORS configuration of the OpenShift cluster. Please check the README file for how to do it."
+    msg:
+      - "Mobile developer console url: https://{{ mdc_route_cmd.stdout }}."
+      - "If this is the first time you run the installation, you also need to update CORS configuration of the OpenShift cluster. Please check the README file for how to do it."
