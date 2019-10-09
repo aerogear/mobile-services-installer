@@ -11,6 +11,7 @@ mss_version: "0.2.2"
 mdc_operator: "0.2.6"
 mdc: "1.1.11"
 mdc_proxy: "v1.1.0"
+data_sync: "0.8.1"
 
 # https://github.com/aerogear/aerogear-js-sdk
 js_sdk_app: "2.3.1"

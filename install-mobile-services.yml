@@ -10,6 +10,7 @@
   - role: ups
   - role: mss
   - role: mdc
+  - role: datasync
   vars_files:
   - ./versions.yml 
   - ./variables.yml
