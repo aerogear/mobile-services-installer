@@ -39,4 +39,6 @@ spec:
             - name: OAUTH_PROXY_IMAGE_STREAM_INITIAL_IMAGE
               value: "{{ ups_proxy_image }}"
             - name: APP_NAMESPACES
-              value: "{{ mobile_services_namespace }}"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

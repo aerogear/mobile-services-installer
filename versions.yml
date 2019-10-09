@@ -4,6 +4,8 @@ idm_operator: "v1.9.2"
 ups: "2.3"
 ups_operator: "0.2.0"
 ups_proxy: "v1.1.0"
+mss_operator: "0.4.1"
+mss_version: "0.2.2"
 
 # https://github.com/aerogear/aerogear-js-sdk
 js_sdk_app: "2.3.1"
