@@ -6,6 +6,8 @@
   - role: prerequisites
   - role: namespace
   - role: pull-secrets
+    tags:
+    - pullsecret
   - role: idm
   - role: ups
   - role: mss
