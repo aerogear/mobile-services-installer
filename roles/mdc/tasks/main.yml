@@ -21,3 +21,10 @@
 - include_tasks: install-oauth-client.yml
 
 - include_tasks: generate-manifest.yml
+
+- name: Get mdc secure route
+  shell: "oc get route/mdc-mdc-proxy -o jsonpath='{.spec.host}' -n {{ mobile_services_namespace }}"
+  register: mdc_route_cmd
+
+- debug:
+    msg: "Mobile developer console url: https://{{ mdc_route_cmd.stdout }}. \nIf this is the first time you run the installation, you also need to update CORS configuration of the OpenShift cluster. Please check the README file for how to do it."

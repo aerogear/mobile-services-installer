@@ -11,8 +11,8 @@
   - role: idm
   - role: ups
   - role: mss
-  - role: mdc
   - role: datasync
+  - role: mdc
   vars_files:
   - ./versions.yml 
   - ./variables.yml
