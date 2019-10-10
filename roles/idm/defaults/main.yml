@@ -4,7 +4,7 @@ rhsso_imagestream_image: registry.redhat.io/redhat-sso-7/sso73-openshift:1.0
 rhsso_plugins:
   - keycloak-metrics-spi
   
-idm_operator_resource: 'https://raw.githubusercontent.com/integr8ly/keycloak-operator/{{idm_operator}}/deploy/'
+idm_operator_resource: 'https://raw.githubusercontent.com/integr8ly/keycloak-operator/{{idm_operator}}/deploy'
 idm_operator_resource_items:
   - "{{ idm_operator_resource }}/rbac.yaml"
   - "{{ idm_operator_resource }}/crds/Keycloak_crd.yaml"
