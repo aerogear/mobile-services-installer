@@ -1,3 +1,4 @@
 ---
 # You can override the variables in this file through command line arguments.
 mobile_services_namespace: "mobile-developer-services"
+openshift_master_url: ""

@@ -1,0 +1,5 @@
+---
+datasync_template_namespace: openshift
+datasync_template_repository: "https://raw.githubusercontent.com/aerogear/datasync-deployment/"
+datasync_app_template: "{{ datasync_template_repository }}{{ data_sync }}/openshift/datasync-http.yml"
+datasync_showcase_template: "{{ datasync_template_repository }}{{ data_sync }}/openshift/datasync-showcase.yml"

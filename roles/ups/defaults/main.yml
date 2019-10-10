@@ -1,7 +1,7 @@
 ups_operator_image: 'quay.io/aerogear/unifiedpush-operator:{{ups_operator}}'
 ups_operator_resources: 'https://raw.githubusercontent.com/aerogear/unifiedpush-operator/{{ups_operator}}/deploy'
 ups_image: 'quay.io/aerogear/unifiedpush-configurable-container:{{ups}}'
-ups_proxy_image: 'docker.io/openshift/oauth-proxy:{{ups_proxy}}'
+ups_proxy_image: 'quay.io/openshift/origin-oauth-proxy:{{ups_proxy}}'
 ups_resources:
   - "{{ ups_operator_resources }}/service_account.yaml"
   - "{{ ups_operator_resources }}/role.yaml"

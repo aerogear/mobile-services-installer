@@ -21,7 +21,7 @@ oc login -u system:admin
 
 chcon -Rt svirt_sandbox_file_t .
 
-ansible-playbook ../install-mobile-services.yml
+ansible-playbook ../install-mobile-services.yml -e registry_service_account_username=$REGISTRY_USERNAME -e registry_password=$REGISTRY_PASSWORD -e openshift_master_url="https://$(minishift ip)"
 
 export ROUTING_SUFFIX=$DEFAULT_CLUSTER_IP.nip.io
 export CONTROLLER_MANAGER_DIR="$(pwd)/openshift.local.clusterup/openshift-controller-manager"

@@ -25,9 +25,9 @@
   shell: "oc apply -f /tmp/mobile-security-service-operator.yml -n {{ mobile_services_namespace }}"
 
 - name: "Wait for Operator pod to be ready"
-  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobile-security-service-operator -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobile-security-service-operator -o jsonpath='{.items[*].status.phase}' | grep Running"
   register: mobile_security_service_operator_result
-  until: mobile_security_service_operator_result.stdout.find("1") != -1
+  until: mobile_security_service_operator_result.rc == 0
   retries: 50
   delay: 10
 
@@ -38,9 +38,9 @@
   shell: oc apply -f {{ mobile_security_service_operator_resources }}/crds/mobile-security-service_v1alpha1_mobilesecurityservicedb_cr.yaml -n {{ mobile_services_namespace }}
 
 - name: "Wait for Mobile Security Service DB pods to be ready"
-  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobilesecurityservicedb -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobilesecurityservicedb -o jsonpath='{.items[*].status.phase}' | grep Running"
   register: mobile_security_service_db_result
-  until: mobile_security_service_db_result.stdout.find("1") != -1
+  until: mobile_security_service_db_result.rc == 0
   retries: 50
   delay: 10
 
@@ -48,9 +48,9 @@
   shell: oc apply -f {{ mobile_security_service_operator_resources }}/crds/mobile-security-service_v1alpha1_mobilesecurityservice_cr.yaml -n {{ mobile_services_namespace }}
 
 - name: "Wait for Mobile Security Service pods to be ready"
-  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobilesecurityservice -o jsonpath='{.items[*].status.containerStatuses[?(@.ready==true)].ready}' | wc -w"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=mobilesecurityservice -o jsonpath='{.items[*].status.phase}' | grep Running"
   register: mobile_security_service_result
-  until: mobile_security_service_result.stdout.find("2") != -1
+  until: mobile_security_service_result.rc == 0
   retries: 50
   delay: 10
 

@@ -29,6 +29,13 @@
     path: "/tmp/ups-operator.yml"
     state: absent
 
+- name: "Wait for ups operator pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=unifiedpush-operator -o jsonpath='{.items[*].status.phase}' | grep Running"
+  register: result
+  until: result.rc == 0
+  retries: 50
+  delay: 10
+
 - name: Process ups server template
   template:
     src: unifiedpushserver.yml.j2
@@ -43,3 +50,17 @@
   file:
     path: "/tmp/unifiedpushserver.yml"
     state: absent
+
+- name: "Wait for UPS DB pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=deploymentconfig=unifiedpush-postgresql -o jsonpath='{.items[*].status.phase}' | grep Running"
+  register: result
+  until: result.rc == 0
+  retries: 50
+  delay: 10
+
+- name: "Wait for UPS pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=deploymentconfig=unifiedpush -o jsonpath='{.items[*].status.phase}' | grep Running"
+  register: result
+  until: result.rc == 0
+  retries: 50
+  delay: 10
