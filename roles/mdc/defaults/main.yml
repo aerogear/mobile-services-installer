@@ -15,7 +15,7 @@ mdc_openshift_master_config_path: "/etc/origin/master/master-config.yaml"
 
 mdc_operator_image: 'quay.io/aerogear/mobile-developer-console-operator:{{mdc_operator}}'
 mdc_image: 'quay.io/aerogear/mobile-developer-console:{{mdc}}'
-mdc_proxy_image: 'docker.io/openshift/oauth-proxy:{{mdc_proxy}}'
+mdc_proxy_image: 'quay.io/openshift/origin-oauth-proxy:{{mdc_proxy}}'
 
 documentation_url: https://docs.aerogear.org/limited-availability/downstream
 
