@@ -3,42 +3,44 @@
 This repo contains ansible playbook for installing Mobile Services into existing OpenShift 3.11 instance.
 It also contains scripts for local development of Mobile Services (using `Minishift` or `oc cluster up`).
 
-### Prerequisites:
-* Ansible 2.7.6
-* Running instance of OpenShift 3.11 with Ansible Service Broker
+## Prerequisites:
+
+* Ansible version 2.7.6 and above
+* Running instance of OpenShift 3.11
+  * If you are using minishift, it is recommended to allocate at least 6 vCPUs and 6GB of memory to it.
 * Cluster-admin access to targeted OpenShift instance
 * `oc` client v3.11
+* If you are using minishift, or if the OpenShift cluster doesn't already have a secret to access `https://registry.redhat.io`, then a service account is required to access `https://registry.redhat.io`.
+  * This is because IDM service uses productized images that are stored in this registry.
+  * To get a service account, go to `https://registry.redhat.io`, then click on `Service Accounts` tab on the top right corner, and then login using your Red Hat developer account. Click on `New Service Account` to create a new one. Take note of the username and password.
+  * For more information, please check [Accessing and Configuring the Red Hat Registry](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html).
 
 ## Installation
 
-1. Open a terminal and log in to an OpenShift target.
-2. To ensure you are targeting an OpenShift instance with the Ansible Service Broker installed, run `oc projects` and search for `openshift-automation-service-broker` or `openshift-ansible-service-broker`.
-3. Use `git` to clone https://github.com/aerogear/mobile-services-installer and `cd` into the repo.
-4. Run the installation playbook:
-
-    If you want to use the community releases, run the following command:
+1. Open a terminal and make sure you are logged in to the target OpenShift cluster as a cluster-admin using `oc`
+2. Use `git` to clone https://github.com/aerogear/mobile-services-installer and `cd` into the repo.
+3. Run the installation playbook:
+  
+    ```
+    ansible-playbook install-mobile-services.yml -e registry_username="<registry_service_account_username>" -e registry_password="<registry_service_account_password>" -e openshift_master_url="<public_url_of_openshift_master>"
+    ```
+    
+    If the cluster can already access the Red Hat container registry, you can skip the part that sets up the pull secrets:
 
     ```
-    ansible-playbook install-mobile-services.yml
+    ansible-playbook install-mobile-services.yml -e openshift_master_url="<public_url_of_openshift_master>" --skip-tags "pullsecret"
     ```
-
-    If you want to use the productized releases from Red Hat Container Catalog, please make sure you first follow the instructions on [this page](https://docs.openshift.com/container-platform/3.11/install_config/configuring_red_hat_registry.html) to ensure that your OpenShift cluster is configured to be able to pull from registry.redhat.io.
-
-    Additionally, create a secret that will store the credentials, as described [here](https://docs.openshift.com/container-platform/3.11/install_config/oab_broker_configuration.html#oab-config-registry-storing-creds), and then use the following command:
-
-    ```
-    ansible-playbook install-mobile-services.yml -e "ansible_playbookbundle_registry_type=rhcc" -e "rhcc_registry_auth_name=<name of the secret>"
-    ```
-
-5. It will take a few minutes to redeploy and load all Mobile Services to Service Catalog. If you want to force the service catalog to refresh, run the following command:
-
-    ```
-    oc get clusterservicebroker ansible-service-broker -o=json > broker.json
-    oc delete clusterservicebroker ansible-service-broker
-    oc create -f broker.json
-    ```
-
-6. Verify that installation was successful by navigating to https://your-openshift-instance-url.com/console/catalog. A new tab `Mobile` should appear in the catalog.
+4. You will also need to update the CORS configuration of the OpenShift cluster to allow the mobile developer console to communicate with the OpenShift API server (you only need to do this once). 
+    * If you are using minishift, you should run [this script](./scripts/minishift-cors.sh).
+    * Otherwise, you should run [this playbook](./update-master-cors-config.yml) to update the master config of the OpenShift cluster. To run this playbook, you need to:
+        1. Get the host names of the master nodes by running `oc get nodes`. Take notes of the host names.
+        2. Copy [the sample hosts inventory file](./inventories/hosts.template), and update it to add the correct host names for master nodes.
+        3. You should also make sure that you can ssh into the master nodes from the workstation.
+        4. Run the playbook and specify the inventory file:
+            ```
+            ansible-playbook -i ./inventories/hosts update-master-cors-config.yml
+            ```
+            Please note that this playbook will restart the api and controller servers of the OpenShift cluster.
 
 ## Setup services for demo
 
@@ -88,6 +90,8 @@ sudo firewall-cmd --reload
 Download [archive with oc client binary](https://github.com/openshift/origin/releases/tag/v3.11.0), extract it, add it to your `$PATH` and run:
 
 ```
+export REGISTRY_USERNAME=<registry_service_account_username>
+export REGISTRY_PASSWORD=<registry_service_account_password>
 ./scripts/oc-cluster-up.sh
 ```
 
@@ -100,6 +104,8 @@ Since `oc cluster up` is causing problems for users using Mac OS (since OpenShif
 To spin up OpenShift 3.11 cluster locally, run:
 
 ```
+export REGISTRY_USERNAME=<registry_service_account_username>
+export REGISTRY_PASSWORD=<registry_service_account_password>
 ./scripts/minishift.sh
 ```
 

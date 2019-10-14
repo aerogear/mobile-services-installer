@@ -1,0 +1,41 @@
+---
+- include_role:
+    name: namespace
+
+- name: "Create required objects"
+  shell: "oc apply -f {{ item }} -n {{ mobile_services_namespace }}"
+  with_items: "{{ idm_operator_resource_items }}"
+
+- name: "Create IDM resource template"
+  template:
+    src: "keycloak.json.j2"
+    dest: "/tmp/keycloak.json"
+
+- name: "Create IDM resource"
+  shell: oc apply -f /tmp/keycloak.json -n {{ mobile_services_namespace }}
+
+- name: "Remove IDM template file"
+  file:
+    path: "/tmp/keycloak.json"
+    state: absent
+
+- name: "Wait for IDM operator pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=name=keycloak-operator -o jsonpath='{.items[*].status.phase}' | grep Running"
+  register: result
+  until: result.rc == 0
+  retries: 50
+  delay: 10
+
+- name: "Wait for IDM DB pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=deploymentConfig=sso-postgresql -o jsonpath='{.items[*].status.phase}' | grep Running"
+  register: result
+  until: result.rc == 0
+  retries: 50
+  delay: 10
+
+- name: "Wait for IDM pod to be ready"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=deploymentConfig=sso -o jsonpath='{.items[*].status.phase}' | grep Running"
+  register: result
+  until: result.rc == 0
+  retries: 50
+  delay: 10

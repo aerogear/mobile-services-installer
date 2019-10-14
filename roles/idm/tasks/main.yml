@@ -1,0 +1,7 @@
+---
+# TODO: we should really get rid of this once keycloak operator itself supports upstream images
+- name: Setup RH-SSO Imagestreams
+  include_tasks: imagestream.yml
+
+- name: Install IDM
+  include_tasks: install.yml

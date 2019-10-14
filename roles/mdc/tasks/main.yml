@@ -1,0 +1,32 @@
+---
+- name: Check for current oauthclient
+  shell: "oc get oauthclient/{{ mdc_oauth_client_id }} -o jsonpath={.secret}"
+  register: mdc_get_client_cmd
+  failed_when: false
+
+- name: Use existing oauth client secret
+  set_fact:
+    mdc_oauth_client_secret: "{{ mdc_get_client_cmd.stdout }}"
+  when: mdc_get_client_cmd.rc == 0
+
+- name: Generate new oauth client secret
+  set_fact:
+    mdc_oauth_client_secret: "{{ (ansible_date_time.epoch + mobile_services_namespace) | hash('sha512') }}"
+  when: mdc_get_client_cmd.rc != 0
+
+- include_tasks: install-operator.yml
+
+- include_tasks: install-console.yml
+
+- include_tasks: install-oauth-client.yml
+
+- include_tasks: generate-manifest.yml
+
+- name: Get mdc secure route
+  shell: "oc get route/mdc-mdc-proxy -o jsonpath='{.spec.host}' -n {{ mobile_services_namespace }}"
+  register: mdc_route_cmd
+
+- debug:
+    msg:
+      - "Mobile developer console url: https://{{ mdc_route_cmd.stdout }}."
+      - "If this is the first time you run the installation, you also need to update CORS configuration of the OpenShift cluster. Please check the README file for how to do it."
