@@ -1,8 +1,8 @@
 {
   "apiVersion": "push.aerogear.org/v1alpha1",
-  "kind": "AndroidVariant",
+  "kind": "PushApplication",
   "metadata": {
-    "name": "{{appname}}-android-ups-variant",
+    "name": "{{ appname }}",
     "ownerReferences": [
       {
         "apiVersion": "mdc.aerogear.org/v1alpha1",
@@ -14,9 +14,6 @@
     ]
   },
   "spec": {
-    "description": "UPS Android Variant",
-    "pushApplicationId": "{{ pushApplicationId }}",
-    "senderId": "{{ push_android_sender_id }}",
-    "serverKey": "{{ push_android_server_key }}"
+    "description": "MDC Push Application"
   }
 }

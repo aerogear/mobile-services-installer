@@ -1,27 +1,23 @@
 {
-  "apiVersion": "servicecatalog.k8s.io/v1beta1",
-  "kind": "ServiceBinding",
+  "apiVersion": "push.aerogear.org/v1alpha1",
+  "kind": "IOSVariant",
   "metadata": {
-    "name": "mobile-ups-app-ios-binding",
-    "labels": {
-      "mobileclients.mobile.k8s.io/clientId": "{{ appname }}"
-    },
-    "annotations": {
-      "binding.aerogear.org/consumer": "{{ appname }}",
-      "binding.aerogear.org/provider": "mobile-push",
-      "mobile.aerogear.org/platform": "ios"
-    }
+    "name": "{{appname}}-ios-ups-variant",
+    "ownerReferences": [
+      {
+        "apiVersion": "mdc.aerogear.org/v1alpha1",
+        "blockOwnerDeletion": false,
+        "kind": "MobileClient",
+        "name": "{{ appname }}",
+        "uid": "{{ appuid }}"
+      }
+    ]
   },
   "spec": {
-    "instanceRef": {
-      "name": "mobile-push"
-    },
-    "parameters": {
-      "CLIENT_ID": "{{ appname }}",
-      "CLIENT_TYPE": "IOS",
-      "cert": "{{ push_ios_cert_content }}",
-      "passphrase": "{{ push_ios_cert_passphase }}", 
-      "iosIsProduction": "{{ push_ios_cert_production | bool }}"
-    }
+    "description": "UPS iOS Variant",
+    "pushApplicationId": "{{ pushApplicationId }}",
+    "certificate": "{{ push_ios_cert_content }}",
+    "passphrase": "{{ push_ios_cert_passphase }}",
+    "production": "{{ push_ios_cert_production|bool|to_json }}"
   }
 }

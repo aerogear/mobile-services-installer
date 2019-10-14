@@ -6,4 +6,9 @@
     dest: "/tmp/{{ item }}.json"
 
 - name: Create ServiceBinding instance {{ item }}
-  shell: oc apply -f /tmp/{{ item }}.json -n {{ namespace }}
+  shell: oc apply -f /tmp/{{ item }}.json -n {{ mobile_services_namespace }}
+
+- name: Remove temporary file
+  file:
+    path: "/tmp/{{ item }}.json"
+    state: absent

@@ -1,12 +1,8 @@
 {
-  "apiVersion": "v1",
-  "data": {
-      "graphqlEndpoint": "/graphql",
-      "syncServerUrl": "https://{{sync_server_url}}"
-  },
-  "kind": "ConfigMap",
+  "apiVersion": "mobile-security-service.aerogear.org/v1alpha1",
+  "kind": "MobileSecurityServiceApp",
   "metadata": {
-    "name": "{{ appname }}-data-sync-binding",
+    "name": "{{ appname }}-security",
     "ownerReferences": [
       {
         "apiVersion": "mdc.aerogear.org/v1alpha1",
@@ -16,5 +12,9 @@
         "uid": "{{ appuid }}"
       }
     ]
+  },
+  "spec": {
+    "appId": "org.aerogear.demo.{{ appname }}",
+    "appName": "{{ appname }}"
   }
 }

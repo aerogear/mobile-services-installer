@@ -1,0 +1,13 @@
+---
+- include_tasks: create-binding.yml
+  with_items:
+    - push-app
+
+- name: Wait for the push id
+  shell: oc get PushApplication {{ appname }} -o jsonpath={.status.pushApplicationId} -n {{ mobile_services_namespace }}
+  register: push_app_id_output
+  until: push_app_id_output.stdout|length > 0
+  retries: 50
+  delay: 5
+
+- set_fact: pushApplicationId={{ push_app_id_output.stdout }}

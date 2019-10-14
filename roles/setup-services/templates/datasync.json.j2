@@ -3,21 +3,18 @@
   "apiVersion": "servicecatalog.k8s.io/v1beta1",
   "metadata": { "name": "showcase-server" },
   "spec": {
-    "clusterServiceClassExternalName": "ag-sync-sync-app-apb",
+    "clusterServiceClassExternalName": "datasync-showcase-server",
     "clusterServicePlanExternalName": "default",
     "parameters": {
-      "SYNC_APP_NAME": "showcase-server",
-      "SYNC_APP_DOCKER_IMAGE": "docker.io/aerogear/voyager-server-example-task",
-      "SYNC_APP_DOCKER_IMAGE_VERSION": "latest",
-      "SYNC_APP_PORT": 4000,
-      "SYNC_APP_METRICS_ENDPOINT": "/metrics",
-      "SYNC_APP_GRAPHQL_ENDPOINT": "/graphql",
-      "DB_HOSTNAME": "postgresql",
-      "DB_NAME": "postgres",
-      "DB_PORT": 5432,
-      "DB_USERNAME": "postgres",
-      "DB_PASSWORD": "postgres",
-      "DB_SSL": false
+      "DATABASE_SERVICE_NAME":"postgresql",
+      "MEMORY_LIMIT":"512Mi",
+      "NAMESPACE":"openshift",
+      "POSTGRESQL_DATABASE":"users",
+      "POSTGRESQL_PASSWORD":"postgres",
+      "POSTGRESQL_USER":"postgresql",
+      "POSTGRESQL_VERSION":"10",
+      "SERVER_SERVICE_NAME":"ionic-showcase-server",
+      "VOLUME_CAPACITY":"1Gi"
     }
   }
 }
