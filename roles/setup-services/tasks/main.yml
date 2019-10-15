@@ -34,7 +34,7 @@
     state: absent
 
 - name: Get uid of the mobileclient
-  shell: oc get mobileclient app1 -o jsonpath={.metadata.uid} -n {{ mobile_services_namespace }}
+  shell: oc get mobileclient {{ appname }} -o jsonpath={.metadata.uid} -n {{ mobile_services_namespace }}
   register: mobileclient_uid_output
 
 - set_fact: appuid={{ mobileclient_uid_output.stdout }}
