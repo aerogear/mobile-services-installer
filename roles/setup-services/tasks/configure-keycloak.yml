@@ -1,4 +1,4 @@
----	
+---
 # This is needed because the current version of the keycloak operator doesn't support creating roles.
 # If it supports creating roles in the future, then this file probably can be removed.
 
