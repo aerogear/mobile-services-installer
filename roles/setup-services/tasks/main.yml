@@ -1,8 +1,4 @@
 ---
-
-- name: Verify jq is installed
-  shell: which jq
-
 - name: Check namespace doesn't already exist
   shell: oc get namespace {{ namespace }}
   register: namespace_exists
@@ -77,6 +73,13 @@
   until: keycloak_status_output.stdout == 'reconcile'
   retries: 50
   delay: 5
+
+- name: Assign roles to users
+  include_tasks: configure-keycloak.yml
+
+- name: Create keycloak config secret
+  shell: oc get --export secret {{ appname }}-server-install-config -o json -n {{ mobile_services_namespace }} | oc create -f - -n {{ namespace }}
+  when: namespace != mobile_services_namespace
 
 - name: Patch Showcase-server
   block:

@@ -1,7 +1,7 @@
 ---
 
-namespace: "{{ mobile_services_namespace }}"
-appname: showcase1
+namespace: showcase-demo
+appname: ionic-showcase
 push_android_sender_id: ""
 push_android_server_key: ""
 push_ios_cert_content: ""
