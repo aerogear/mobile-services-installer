@@ -1,23 +1,129 @@
 {
-  "apiVersion": "servicecatalog.k8s.io/v1beta1",
-  "kind": "ServiceBinding",
+  "apiVersion": "aerogear.org/v1alpha1",
+  "kind": "KeycloakRealm",
   "metadata": {
-    "name": "mobile-idm-app-binding",
-    "labels": {
-      "mobileclients.mobile.k8s.io/clientId": "{{ appname }}"
-    },
-    "annotations": {
-      "binding.aerogear.org/consumer": "{{ appname }}",
-      "binding.aerogear.org/provider": "mobile-idm-service" 
-    }
+    "name": "{{ appname }}",
+    "ownerReferences": [
+      {
+        "apiVersion": "mdc.aerogear.org/v1alpha1",
+        "blockOwnerDeletion": false,
+        "kind": "MobileClient",
+        "name": "{{ appname }}",
+        "uid": "{{ appuid }}"
+      }
+    ]
   },
   "spec": {
-    "instanceRef": {
-      "name": "mobile-idm-service"
-    },
-    "parameters": {
-      "CLIENT_ID": "{{ appname }}",
-      "CLIENT_TYPE": "public"
-    }
+    "clients": [
+      {
+        "access": null,
+        "adminUrl": "",
+        "baseUrl": "",
+        "bearerOnly": false,
+        "clientAuthenticatorType": "client-secret",
+        "clientId": "{{ appname }}-client",
+        "consentRequired": false,
+        "description": "",
+        "directAccessGrantsEnabled": false,
+        "enabled": true,
+        "frontchannelLogout": false,
+        "fullScopeAllowed": true,
+        "implicitFlowEnabled": false,
+        "name": "{{ appname }}-client",
+        "nodeReRegistrationTimeout": -1,
+        "notBefore": 0,
+        "outputSecret": "{{ appname }}-client-install-config",
+        "publicClient": true,
+        "redirectUris": [
+          "http://localhost*"
+        ],
+        "rootUrl": "",
+        "secret": "",
+        "serviceAccountsEnabled": false,
+        "standardFlowEnabled": true,
+        "surrogateAuthRequired": false,
+        "useTemplateConfig": false,
+        "useTemplateMappers": false,
+        "useTemplateScope": false,
+        "webOrigins": [
+          "http://localhost:8100",
+          "*"
+        ]
+      },
+      {
+        "access": null,
+        "adminUrl": "",
+        "baseUrl": "",
+        "bearerOnly": true,
+        "clientAuthenticatorType": "client-secret",
+        "clientId": "{{ appname }}-server",
+        "consentRequired": false,
+        "description": "",
+        "directAccessGrantsEnabled": true,
+        "enabled": true,
+        "frontchannelLogout": false,
+        "fullScopeAllowed": true,
+        "implicitFlowEnabled": false,
+        "name": "{{ appname }}-server",
+        "nodeReRegistrationTimeout": -1,
+        "notBefore": 0,
+        "outputSecret": "{{ appname }}-server-install-config",
+        "publicClient": false,
+        "secret": "",
+        "serviceAccountsEnabled": false,
+        "standardFlowEnabled": true
+      }
+    ],
+    "createOnly": true,
+    "displayName": "Realm for mobile app {{ appname }}",
+    "enabled": true,
+    "eventsListeners": null,
+    "id": "{{ appname }}-realm",
+    "realm": "{{ appname }}-realm",
+    "users": [
+      {
+        "clientRoles": {
+          "account": [
+            "manage-account",
+            "view-profile"
+          ],
+          "realm-management": [
+            "realm-admin"
+          ]
+        },
+        "emailVerified": false,
+        "enabled": true,
+        "firstName": "",
+        "id": "2ff63f5d-5f2d-4705-8899-2359eeaece41",
+        "lastName": "",
+        "outputSecret": "{{ appname }}-admin-pass",
+        "password": "admin",
+        "realmRoles": [
+          "offline_access",
+          "uma_authorization"
+        ],
+        "username": "admin"
+      },
+      {
+        "clientRoles": {
+          "account": [
+            "manage-account",
+            "view-profile"
+          ]
+        },
+        "emailVerified": false,
+        "enabled": true,
+        "firstName": "",
+        "id": "2ff63f5d-5f2d-4705-8899-2359eeaece41",
+        "lastName": "",
+        "outputSecret": "{{ appname }}-admin-pass",
+        "password": "developer",
+        "realmRoles": [
+          "offline_access",
+          "uma_authorization"
+        ],
+        "username": "developer"
+      }
+    ]
   }
 }

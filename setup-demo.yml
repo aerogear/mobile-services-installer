@@ -4,3 +4,5 @@
   hosts: localhost
   roles:
   - role: setup-services
+  vars_files:
+  - variables.yml

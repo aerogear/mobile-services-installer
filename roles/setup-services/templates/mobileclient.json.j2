@@ -1,12 +1,14 @@
 {
-  "apiVersion": "mobile.k8s.io/v1alpha1",
+  "apiVersion": "mdc.aerogear.org/v1alpha1",
   "kind": "MobileClient",
   "metadata": {
-    "name": "{{ appname }}",
-    "namespace": "{{ namespace }}"
+    "name": "{{ appname }}"
   },
   "spec": {
     "name": "{{ appname }}",
     "apiKey": "bf997a82-9415-40fc-8480-e222a97d55b4"
+  },
+  "status":{
+    "services": []
   }
 }

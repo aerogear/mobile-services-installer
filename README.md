@@ -52,8 +52,8 @@ ansible-playbook setup-demo.yml
 
 This playbook will:
 
-* Provision all the mobile services into a namespace, including showcase server.
-* Create a mobile client for the showcase app.
+* Provision the showcase data sync server into a specified namespace.
+* Create a mobile client for the ionic-showcase app.
 * Bind all the available services to the showcase app (if no push information is provided, then push service won't be bound)
 * Make sure the showcase server app is protected by the IDM service, and supports file upload.
 * Setup the following users in the IDM service

@@ -7,4 +7,8 @@
 
 - name: Provision service {{ item }}
   shell: oc apply -f /tmp/{{ item }}.json -n {{ namespace }}
-   
+
+- name: Remove temporary file
+  file:
+    path: /tmp/{{ item }}.json
+    state: absent

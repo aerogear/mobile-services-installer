@@ -2,7 +2,7 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: unifiedpush-operator
+  name: unifiedpush-operator-standalone
 subjects:
 - kind: ServiceAccount
   name: unifiedpush-operator
@@ -15,7 +15,7 @@ roleRef:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: unifiedpush-operator-enmasse
+  name: unifiedpush-operator-enmasse-standalone
 subjects:
 - kind: ServiceAccount
   name: unifiedpush-operator
