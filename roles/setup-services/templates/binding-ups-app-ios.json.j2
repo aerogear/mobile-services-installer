@@ -18,6 +18,6 @@
     "pushApplicationId": "{{ pushApplicationId }}",
     "certificate": "{{ push_ios_cert_content }}",
     "passphrase": "{{ push_ios_cert_passphase }}",
-    "production": "{{ push_ios_cert_production|bool|to_json }}"
+    "production": {{ push_ios_cert_production|bool|to_json }}
   }
 }
