@@ -78,7 +78,7 @@
   include_tasks: configure-keycloak.yml
 
 - name: Create keycloak config secret
-  shell: oc get --export secret {{ appname }}-server-install-config -o json -n {{ mobile_services_namespace }} | oc create -f - -n {{ namespace }}
+  shell: oc get --export secret {{ appname }}-server-install-config -o json -n {{ mobile_services_namespace }} | oc apply -f - -n {{ namespace }}
   when: namespace != mobile_services_namespace
 
 - name: Patch Showcase-server
