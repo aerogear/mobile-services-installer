@@ -99,7 +99,9 @@ function clusterup() {
     # start the cluster
     oc cluster up \
         --base-dir "$BASE_DIR" \
-        --public-hostname="$PUBLIC_IP.nip.io"
+        --public-hostname="$PUBLIC_IP.nip.io" \
+        --routing-suffix="$PUBLIC_IP.nip.io" \
+        --no-proxy="$PUBLIC_IP"
 }
 
 if ! curl -k "https://$PUBLIC_IP.nip.io:8443" >/dev/null 2>&1; then
