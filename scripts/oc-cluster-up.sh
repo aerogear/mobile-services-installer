@@ -91,8 +91,10 @@ function bootstrap() {
 
 function clusterup() {
 
+    local setupcerts
     if [[ ! -f "$BASE_DIR/components.json" ]]; then
         bootstrap
+        setupcerts="true"
     else
         echo "warn: reuse existing configuration" >&2
     fi
@@ -104,6 +106,13 @@ function clusterup() {
         --routing-suffix="$PUBLIC_IP.nip.io" \
         --no-proxy="$PUBLIC_IP" \
         --enable="*,-rhel-imagestreams"
+
+    if [[ "$setupcerts" == "true" ]]; then
+        # generate self signed certificate
+        ROUTING_SUFFIX="$PUBLIC_IP.nip.io" \
+            CONTROLLER_MANAGER_DIR="$BASE_DIR/openshift-controller-manager" \
+            "$__DIRNAME/setup-router-certs.sh"
+    fi
 }
 
 if ! curl -k "https://$PUBLIC_IP.nip.io:8443" >/dev/null 2>&1; then
@@ -119,8 +128,3 @@ ansible-playbook "$__DIRNAME/../install-mobile-services.yml" \
     -e registry_username="$REGISTRY_USERNAME" \
     -e registry_password="$REGISTRY_PASSWORD" \
     -e openshift_master_url="https://$PUBLIC_IP.nip.io:8443"
-
-# generate self signed certificate
-ROUTING_SUFFIX="$PUBLIC_IP.nip.io" \
-    CONTROLLER_MANAGER_DIR="$BASE_DIR/openshift-controller-manager" \
-    "$__DIRNAME/setup-router-certs.sh"
