@@ -105,9 +105,9 @@ function clusterup() {
     if [[ "$post" == "true" ]]; then
 
         # add additional components
-        oc cluster add template-service-broker
-        oc cluster add automation-service-broker
-        oc cluster add service-catalog
+        oc cluster add --base-dir "$BASE_DIR" template-service-broker
+        oc cluster add --base-dir "$BASE_DIR" automation-service-broker
+        oc cluster add --base-dir "$BASE_DIR" service-catalog
 
         # generate self signed certificate
         ROUTING_SUFFIX="$PUBLIC_IP.nip.io" \
