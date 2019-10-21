@@ -117,7 +117,7 @@ function clusterup() {
 if ! curl -k "https://$PUBLIC_IP.nip.io:8443" >/dev/null 2>&1; then
     clusterup
 else
-    echo "warn: skip oc cluser up because already running" >&2
+    echo "warn: skipping oc cluster up because it's already running" >&2
 fi
 
 oc login -u system:admin
