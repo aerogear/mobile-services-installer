@@ -104,8 +104,7 @@ function clusterup() {
         --base-dir "$BASE_DIR" \
         --public-hostname="$PUBLIC_IP.nip.io" \
         --routing-suffix="$PUBLIC_IP.nip.io" \
-        --no-proxy="$PUBLIC_IP" \
-        --enable="*,-rhel-imagestreams"
+        --no-proxy="$PUBLIC_IP"
 
     if [[ "$setupcerts" == "true" ]]; then
         # generate self signed certificate
