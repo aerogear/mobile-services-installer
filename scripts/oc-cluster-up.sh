@@ -96,7 +96,7 @@ function clusterup() {
         bootstrap
         setupcerts="true"
     else
-        echo "warn: reuse existing configuration" >&2
+        echo "warn: using existing configuration" >&2
     fi
 
     # start the cluster
