@@ -72,29 +72,25 @@ if [[ -z "$REGISTRY_USERNAME" ]] || [[ -z "$REGISTRY_PASSWORD" ]]; then
     exit 1
 fi
 
-function bootstrap() {
-
-    # only write the configuration but don't start the cluster
-    oc cluster up \
-        --write-config \
-        --base-dir "$BASE_DIR" \
-        --public-hostname="$PUBLIC_IP.nip.io" \
-        --routing-suffix="$PUBLIC_IP.nip.io" \
-        --no-proxy="$PUBLIC_IP" \
-        --enable="*,-rhel-imagestreams"
-
-    # allow all origins '.*'
-    for a in kube-apiserver openshift-apiserver openshift-controller-manager; do
-        sed -i 's/^\(corsAllowedOrigins:\)$/\1\n- .*/' "$BASE_DIR/$a/master-config.yaml"
-    done
-}
-
 function clusterup() {
 
-    local setupcerts
+    local post
     if [[ ! -f "$BASE_DIR/components.json" ]]; then
-        bootstrap
-        setupcerts="true"
+        post="true"
+
+        # only write the configuration but don't start the cluster
+        oc cluster up \
+            --write-config \
+            --base-dir "$BASE_DIR" \
+            --public-hostname "$PUBLIC_IP.nip.io" \
+            --routing-suffix "$PUBLIC_IP.nip.io" \
+            --no-proxy "$PUBLIC_IP" \
+
+        # allow all origins '.*'
+        for a in kube-apiserver openshift-apiserver openshift-controller-manager; do
+            sed -i 's/^\(corsAllowedOrigins:\)$/\1\n- .*/' "$BASE_DIR/$a/master-config.yaml"
+        done
+
     else
         echo "warn: using existing configuration" >&2
     fi
@@ -102,11 +98,17 @@ function clusterup() {
     # start the cluster
     oc cluster up \
         --base-dir "$BASE_DIR" \
-        --public-hostname="$PUBLIC_IP.nip.io" \
-        --routing-suffix="$PUBLIC_IP.nip.io" \
-        --no-proxy="$PUBLIC_IP"
+        --public-hostname "$PUBLIC_IP.nip.io" \
+        --routing-suffix "$PUBLIC_IP.nip.io" \
+        --no-proxy "$PUBLIC_IP"
 
-    if [[ "$setupcerts" == "true" ]]; then
+    if [[ "$post" == "true" ]]; then
+
+        # add additional components
+        oc cluster add template-service-broker
+        oc cluster add automation-service-broker
+        oc cluster add service-catalog
+
         # generate self signed certificate
         ROUTING_SUFFIX="$PUBLIC_IP.nip.io" \
             CONTROLLER_MANAGER_DIR="$BASE_DIR/openshift-controller-manager" \
