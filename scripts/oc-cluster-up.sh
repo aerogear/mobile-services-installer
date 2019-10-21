@@ -80,7 +80,8 @@ function bootstrap() {
         --base-dir "$BASE_DIR" \
         --public-hostname="$PUBLIC_IP.nip.io" \
         --routing-suffix="$PUBLIC_IP.nip.io" \
-        --no-proxy="$PUBLIC_IP"
+        --no-proxy="$PUBLIC_IP" \
+        --enable="*,-rhel-imagestreams"
 
     # allow all origins '.*'
     for a in kube-apiserver openshift-apiserver openshift-controller-manager; do
@@ -101,7 +102,8 @@ function clusterup() {
         --base-dir "$BASE_DIR" \
         --public-hostname="$PUBLIC_IP.nip.io" \
         --routing-suffix="$PUBLIC_IP.nip.io" \
-        --no-proxy="$PUBLIC_IP"
+        --no-proxy="$PUBLIC_IP" \
+        --enable="*,-rhel-imagestreams"
 }
 
 if ! curl -k "https://$PUBLIC_IP.nip.io:8443" >/dev/null 2>&1; then
