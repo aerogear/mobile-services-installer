@@ -6,7 +6,7 @@ __FILENAME="$0"
 __DIRNAME="$(cd "$(dirname "$__FILENAME")" && pwd)"
 
 if [[ -L "$__FILENAME" ]]; then
-    echo "warn: because '$__FILENAME' is a symlink it could cause unxpected failurs" >&2
+    echo "warn: because '$__FILENAME' is a symlink it could cause unexpected failures" >&2
 fi
 
 function ipv4() {
