@@ -74,6 +74,13 @@ fi
 
 function clusterup() {
 
+    local args=(
+        --base-dir "$BASE_DIR"
+        --public-hostname "$PUBLIC_IP.nip.io"
+        --routing-suffix "$PUBLIC_IP.nip.io"
+        --no-proxy "$PUBLIC_IP"
+    )
+
     local post
     if [[ ! -f "$BASE_DIR/components.json" ]]; then
         post="true"
@@ -81,13 +88,14 @@ function clusterup() {
         # only write the configuration but don't start the cluster
         oc cluster up \
             --write-config \
-            --base-dir "$BASE_DIR" \
-            --public-hostname "$PUBLIC_IP.nip.io" \
-            --routing-suffix "$PUBLIC_IP.nip.io" \
-            --no-proxy "$PUBLIC_IP"
+            "${args[@]}"
 
         # allow all origins '.*'
-        for a in kube-apiserver openshift-apiserver openshift-controller-manager; do
+        for a in \
+            kube-apiserver \
+            openshift-apiserver \
+            openshift-controller-manager; do
+
             sed -i 's/^\(corsAllowedOrigins:\)$/\1\n- .*/' "$BASE_DIR/$a/master-config.yaml"
         done
 
@@ -96,18 +104,18 @@ function clusterup() {
     fi
 
     # start the cluster
-    oc cluster up \
-        --base-dir "$BASE_DIR" \
-        --public-hostname "$PUBLIC_IP.nip.io" \
-        --routing-suffix "$PUBLIC_IP.nip.io" \
-        --no-proxy "$PUBLIC_IP"
+    oc cluster up "${args[@]}"
 
     if [[ "$post" == "true" ]]; then
 
         # add additional components
-        oc cluster add --base-dir "$BASE_DIR" template-service-broker
-        oc cluster add --base-dir "$BASE_DIR" automation-service-broker
-        oc cluster add --base-dir "$BASE_DIR" service-catalog
+        for c in \
+            service-catalog \
+            template-service-broker \
+            automation-service-broker; do
+
+            oc cluster add --base-dir "$BASE_DIR" "$c"
+        done
 
         # generate self signed certificate
         ROUTING_SUFFIX="$PUBLIC_IP.nip.io" \
