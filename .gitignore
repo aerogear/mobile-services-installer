@@ -1,2 +1,3 @@
 *.retry
 scripts/broker.json
+/openshift.local.clusterup
