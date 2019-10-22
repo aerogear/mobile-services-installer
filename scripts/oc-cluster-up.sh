@@ -108,15 +108,6 @@ function clusterup() {
 
     if [[ "$post" == "true" ]]; then
 
-        # add additional components
-        for c in \
-            service-catalog \
-            template-service-broker \
-            automation-service-broker; do
-
-            oc cluster add --base-dir "$BASE_DIR" "$c"
-        done
-
         # generate self signed certificate
         ROUTING_SUFFIX="$PUBLIC_IP.nip.io" \
             CONTROLLER_MANAGER_DIR="$BASE_DIR/openshift-controller-manager" \
