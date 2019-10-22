@@ -84,7 +84,7 @@ function clusterup() {
             --base-dir "$BASE_DIR" \
             --public-hostname "$PUBLIC_IP.nip.io" \
             --routing-suffix "$PUBLIC_IP.nip.io" \
-            --no-proxy "$PUBLIC_IP" \
+            --no-proxy "$PUBLIC_IP"
 
         # allow all origins '.*'
         for a in kube-apiserver openshift-apiserver openshift-controller-manager; do
