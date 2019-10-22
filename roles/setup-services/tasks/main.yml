@@ -8,13 +8,15 @@
   shell: oc create namespace {{ namespace }}
   when: namespace_exists.rc != 0
 
-- include_tasks: provision-service.yml
-  with_items: "{{ datasync_server }}"
+- name: Deploy Datasync Showcase Server template
+  shell: oc new-app --template=datasync-showcase-server -n {{ namespace }}
+  register: template_deploy_output
+  failed_when: template_deploy_output.stderr != '' and 'already exists' not in template_deploy_output.stderr
 
 - name: Wait for the data sync server to be ready
-  shell: oc get serviceinstance -o=jsonpath='{.items[*].status.conditions[0].status}' -n {{namespace}} | tr ' ' '\n' | grep True | wc -w
+  shell: "oc get dc -o jsonpath='{.items[*].status.readyReplicas}' -n {{ namespace }} | wc -w"
   register: ready_status_output
-  until: ready_status_output.stdout.find('1') != -1
+  until: ready_status_output.stdout.find('3') != -1
   retries: 100
   delay: 10
   failed_when: false
