@@ -7,6 +7,7 @@ ups_resources:
   - "{{ ups_operator_resources }}/role.yaml"
   - "{{ ups_operator_resources }}/crds/push_v1alpha1_androidvariant_crd.yaml"
   - "{{ ups_operator_resources }}/crds/push_v1alpha1_iosvariant_crd.yaml"
+  - "{{ ups_operator_resources }}/crds/push_v1alpha1_webpushvariant_crd.yaml"
   - "{{ ups_operator_resources }}/crds/push_v1alpha1_pushapplication_crd.yaml"
   - "{{ ups_operator_resources }}/crds/push_v1alpha1_unifiedpushserver_crd.yaml"
 ups_operator_deployment: "{{ ups_operator_resources }}/operator.yaml"
