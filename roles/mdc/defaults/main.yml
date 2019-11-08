@@ -7,7 +7,6 @@ mdc_resources:
   - "{{ mdc_operator_resources }}/role.yaml"
   - "{{ mdc_operator_resources }}/role_binding.yaml"
   - "{{ mdc_operator_resources }}/crds/mdc_v1alpha1_mobiledeveloperconsole_crd.yaml"
-  - "{{ mdc_operator_resources }}/mobileclient_admin_role.yaml"
   - "{{ mdc_operator_resources }}/mdc_v1alpha1_mobileclient_crd.yaml"
   - "{{ mdc_operator_resources }}/mobiledeveloper_role.yaml"
   - "{{ mdc_operator_resources }}/mobiledeveloper_rolebinding.yaml"

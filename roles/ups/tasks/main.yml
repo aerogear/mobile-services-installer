@@ -52,14 +52,14 @@
     state: absent
 
 - name: "Wait for UPS DB pod to be ready"
-  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=deploymentconfig=unifiedpush-postgresql -o jsonpath='{.items[*].status.phase}' | grep Running"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=service=unifiedpush-postgresql -o jsonpath='{.items[*].status.phase}' | grep Running"
   register: result
   until: result.rc == 0
   retries: 50
   delay: 10
 
 - name: "Wait for UPS pod to be ready"
-  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=deploymentconfig=unifiedpush -o jsonpath='{.items[*].status.phase}' | grep Running"
+  shell: "oc get pods --namespace={{ mobile_services_namespace }} --selector=service=ups -o jsonpath='{.items[*].status.phase}' | grep Running"
   register: result
   until: result.rc == 0
   retries: 50
